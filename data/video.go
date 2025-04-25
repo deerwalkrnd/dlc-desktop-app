@@ -1,6 +1,10 @@
 package data
 
-import "github.com/deerwalkrnd/dlc-desktop-app/db"
+import (
+	"fmt"
+
+	"github.com/deerwalkrnd/dlc-desktop-app/db"
+)
 
 // TEACHER NAME - LESSION NO | LESSION TITLE - LECTURE NO | LECTURE TITLE - SUBJECT NAME | SUBJECT TYPE - CLASS .mp4
 
@@ -15,9 +19,10 @@ type Video struct {
 	SubjectName  string
 
 	SubjectType db.SubjectType
+	VideoURL    string
 }
 
-func NewVideo(TeacherName, LessonTitle, LectureTitle, SubjectName string, LessionNumber float64, LectureNumber int, SubjectType db.SubjectType) *Video {
+func NewVideo(TeacherName, LessonTitle, LectureTitle, SubjectName string, LessionNumber float64, LectureNumber int, SubjectType db.SubjectType, VideoURL string) *Video {
 	return &Video{
 		TeacherName:   TeacherName,
 		LessonNumber:  LessionNumber,
@@ -26,5 +31,12 @@ func NewVideo(TeacherName, LessonTitle, LectureTitle, SubjectName string, Lessio
 		LectureTitle:  LectureTitle,
 		SubjectName:   SubjectName,
 		SubjectType:   SubjectType,
+		VideoURL:      VideoURL,
 	}
+}
+
+func ParseVideo(path string) *Video {
+	fmt.Println("parsing: ", path)
+
+	return nil
 }
