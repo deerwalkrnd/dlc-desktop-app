@@ -3,6 +3,7 @@ package data
 import (
 	"fmt"
 	"log"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -10,8 +11,8 @@ import (
 	"github.com/deerwalkrnd/dlc-desktop-app/db"
 )
 
-// TEACHER NAME - LESSION NO | LESSION TITLE - LECTURE NO | LECTURE TITLE - SUBJECT NAME | SUBJECT TYPE - CLASS .mp4
-const MATCH_VIDEO_PATTERN = `^([^-]+) - ([^|]+) \| ([^-]+) - ([^|]+) \| ([^-]+) - ([^|]+) \| ([^-]+) - (\d+) \.mp4$`
+// TEACHER NAME - LESSION NO - LESSION TITLE - LECTURE NO - LECTURE TITLE - SUBJECT NAME - SUBJECT TYPE - CLASS .mp4
+const MATCH_VIDEO_PATTERN = `^([^-]+) - ([^-]+) - ([^-]+) - ([^-]+) - ([^-]+) - ([^-]+) - ([^-]+) - (\d+) \.mp4$`
 
 type Video struct {
 	TeacherName  string
@@ -43,10 +44,12 @@ func NewVideo(TeacherName, LessonTitle, LectureTitle, SubjectName string, Lessio
 }
 
 func ParseVideo(path string) *Video {
-	fmt.Println("parsing: ", path)
+
+	basePath := filepath.Base(path)
+	fmt.Println("parsing: ", basePath)
 
 	re := regexp.MustCompile(MATCH_VIDEO_PATTERN)
-	matches := re.FindStringSubmatch(path)
+	matches := re.FindStringSubmatch(basePath)
 
 	if matches == nil || len(matches) != 9 {
 		log.Printf("Failed to parse, not in correct format: %s\n", path)

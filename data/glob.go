@@ -1,7 +1,9 @@
 package data
 
 import (
+	"fmt"
 	"io/fs"
+	"log"
 	"path/filepath"
 	"regexp"
 )
@@ -17,10 +19,18 @@ func Initialize(dataPath string) error {
 
 		if !d.IsDir() && videoPattern.MatchString(path) {
 			video := ParseVideo(path)
+			if video == nil {
+				log.Printf("failed to parse: %s\n", path)
+				return nil
+			}
 			videos = append(videos, video)
 		}
 		return nil
 	})
-	// fmt.Println(videos)
+
+	for _, video := range videos {
+		fmt.Println(video)
+	}
+
 	return nil
 }

@@ -27,7 +27,9 @@ func init() {
 
 		Logger.Println("Database Migration Finished")
 
-		err = data.Initialize("D:\\DLC VIDEOS")
+		dataPath, _ := filepath.Abs("DLC")
+
+		err = data.Initialize(dataPath)
 
 		if err != nil {
 			Logger.Fatalf("failed to initialize the database and seed data: %s\n", err.Error())
