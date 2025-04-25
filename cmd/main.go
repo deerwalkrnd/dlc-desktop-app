@@ -5,7 +5,36 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/deerwalkrnd/dlc-desktop-app/data"
+	db "github.com/deerwalkrnd/dlc-desktop-app/db"
 )
+
+var Logger = log.Default()
+
+func init() {
+	Logger.Println("Started DLC Desktop Application")
+
+	if _, err := os.Stat(db.DATABASE_NAME); err != nil {
+		// no db file detected, create - migrate - populate
+		DB, err := db.GetDB()
+
+		if err != nil {
+			Logger.Fatalf("error getting database, %s\n", err.Error())
+		}
+
+		db.MigrateModels(DB)
+
+		Logger.Println("Database Migration Finished")
+
+		err = data.Initialize("D:\\DLC VIDEOS")
+
+		if err != nil {
+			Logger.Fatalf("failed to initialize the database and seed data: %s\n", err.Error())
+		}
+
+	}
+}
 
 func main() {
 	outputPath := "./web/built"
