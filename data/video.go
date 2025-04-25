@@ -15,18 +15,20 @@ import (
 const MATCH_VIDEO_PATTERN = `^([^-]+) - ([^-]+) - ([^-]+) - ([^-]+) - ([^-]+) - ([^-]+) - ([^-]+) - (\d+) \.mp4$`
 
 type Video struct {
-	TeacherName  string
-	LessonNumber float64
+	Class int
 
-	LessionTitle  string
-	LectureNumber int
+	TeacherName string
 
-	LectureTitle string
-	SubjectName  string
-
+	SubjectName string
 	SubjectType db.SubjectType
-	Class       int
-	VideoURL    string
+
+	LectureNumber int
+	LectureTitle  string
+
+	LessonNumber float64
+	LessionTitle string
+
+	VideoURL string
 }
 
 func NewVideo(TeacherName, LessonTitle, LectureTitle, SubjectName string, LessionNumber float64, LectureNumber, Class int, SubjectType db.SubjectType, VideoURL string) *Video {
