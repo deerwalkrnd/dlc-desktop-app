@@ -1,14 +1,15 @@
 package data
 
 import (
-	"fmt"
 	"io/fs"
 	"log"
 	"path/filepath"
 	"regexp"
+
+	"gorm.io/gorm"
 )
 
-func Initialize(dataPath string) error {
+func Initialize(dataPath string, db *gorm.DB) error {
 	videos := []*Video{}
 	videoPattern := regexp.MustCompile(".mp4$")
 
@@ -28,9 +29,7 @@ func Initialize(dataPath string) error {
 		return nil
 	})
 
-	for _, video := range videos {
-		fmt.Println(video)
-	}
+	SeedVideos(videos, db)
 
 	return nil
 }

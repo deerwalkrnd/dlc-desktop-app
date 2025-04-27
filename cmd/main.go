@@ -29,7 +29,7 @@ func init() {
 
 		dataPath, _ := filepath.Abs("DLC")
 
-		err = data.Initialize(dataPath)
+		err = data.Initialize(dataPath, DB)
 
 		if err != nil {
 			Logger.Fatalf("failed to initialize the database and seed data: %s\n", err.Error())
