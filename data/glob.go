@@ -22,6 +22,7 @@ func Initialize(dataPath string, db *gorm.DB) error {
 			video := ParseVideo(path)
 			if video == nil {
 				log.Printf("failed to parse: %s\n", path)
+				log.Printf("skipping!")
 				return nil
 			}
 			videos = append(videos, video)
@@ -29,7 +30,11 @@ func Initialize(dataPath string, db *gorm.DB) error {
 		return nil
 	})
 
-	SeedVideos(videos, db)
+	err := SeedVideos(videos, db)
+
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

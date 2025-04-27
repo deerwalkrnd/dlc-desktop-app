@@ -1,7 +1,7 @@
 package data
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/deerwalkrnd/dlc-desktop-app/db"
 	"gorm.io/gorm"
@@ -10,13 +10,16 @@ import (
 func SeedVideos(videos []*Video, DB *gorm.DB) error {
 
 	for _, video := range videos {
-		seedVideo(video, DB)
+		if err := seedVideo(video, DB); err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
 func seedVideo(video *Video, db *gorm.DB) error {
+
 	class := getClass(video.Class, db)
 	teacher := getTeacher(video.TeacherName, db)
 	subject := getSubject(class.ID, video.SubjectType, video.SubjectName, db)
@@ -27,11 +30,19 @@ func seedVideo(video *Video, db *gorm.DB) error {
 		subject.ID,
 		db,
 	)
+	lesson := getLesson(
+		video.LessionName,
+		video.LessonNumber,
+		video.VideoURL,
+		teacher.ID,
+		lecture.ID,
+		db,
+	)
 
-	fmt.Println("got class : ", *class)
-	fmt.Println("got teacher : ", *teacher)
-	fmt.Println("got subject: ", *subject)
-	fmt.Println("got lecture: ", *lecture)
+	if lesson == nil || lecture == nil || subject == nil || teacher == nil || class == nil {
+		return errors.New("could not seed the video, some fields are detected")
+	}
+
 	return nil
 }
 
@@ -99,4 +110,21 @@ func getLecture(lectureNumber uint, lectureName string, subjectId uint, DB *gorm
 	}
 
 	return &lecture
+}
+
+func getLesson(lessionName string, lessionNumber float64, videoUrl string, teacherId uint, lectureId uint, DB *gorm.DB) *db.Lesson {
+	var lesson db.Lesson
+	result := DB.Where("name = ? AND number = ? AND lecture_id = ? AND teacher_id = ?", lessionName, lessionNumber, lectureId, teacherId).First(&lesson)
+
+	if result.Error == gorm.ErrRecordNotFound {
+		lesson := db.Lesson{
+			Name:      lessionName,
+			Number:    lessionNumber,
+			VideoUrl:  videoUrl,
+			TeacherId: teacherId,
+			LectureId: lectureId,
+		}
+		DB.Create(&lesson)
+	}
+	return &lesson
 }

@@ -31,7 +31,10 @@ type Video struct {
 	VideoURL string
 }
 
-func NewVideo(TeacherName, LessonName, LectureName, SubjectName string, LessionNumber float64, LectureNumber, Class uint, SubjectType db.SubjectType, VideoURL string) *Video {
+func NewVideo(
+	TeacherName, LessonName, LectureName, SubjectName string,
+	LessionNumber float64, LectureNumber, Class uint,
+	SubjectType db.SubjectType, VideoURL string) *Video {
 	return &Video{
 		TeacherName:   TeacherName,
 		LessonNumber:  LessionNumber,
