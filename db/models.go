@@ -11,7 +11,7 @@ const (
 
 type Class struct {
 	gorm.Model
-	Number   int
+	Number   uint
 	Subjects []Subject `gorm:"foreignKey:ClassId"`
 }
 
@@ -26,7 +26,7 @@ type Subject struct {
 
 type Lecture struct {
 	gorm.Model
-	Number    string
+	Number    uint
 	Name      string
 	SubjectId uint
 	Subject   Subject  `gorm:"foreignKey:SubjectId"`

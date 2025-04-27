@@ -15,29 +15,29 @@ import (
 const MATCH_VIDEO_PATTERN = `^([^-]+) - ([^-]+) - ([^-]+) - ([^-]+) - ([^-]+) - ([^-]+) - ([^-]+) - (\d+) \.mp4$`
 
 type Video struct {
-	Class int
+	Class uint
 
 	TeacherName string
 
 	SubjectName string
 	SubjectType db.SubjectType
 
-	LectureNumber int
-	LectureTitle  string
+	LectureNumber uint
+	LectureName   string
 
 	LessonNumber float64
-	LessionTitle string
+	LessionName  string
 
 	VideoURL string
 }
 
-func NewVideo(TeacherName, LessonTitle, LectureTitle, SubjectName string, LessionNumber float64, LectureNumber, Class int, SubjectType db.SubjectType, VideoURL string) *Video {
+func NewVideo(TeacherName, LessonName, LectureName, SubjectName string, LessionNumber float64, LectureNumber, Class uint, SubjectType db.SubjectType, VideoURL string) *Video {
 	return &Video{
 		TeacherName:   TeacherName,
 		LessonNumber:  LessionNumber,
-		LessionTitle:  LectureTitle,
+		LessionName:   LectureName,
 		LectureNumber: LectureNumber,
-		LectureTitle:  LectureTitle,
+		LectureName:   LectureName,
 		SubjectName:   SubjectName,
 		SubjectType:   SubjectType,
 		VideoURL:      VideoURL,
@@ -95,12 +95,12 @@ func ParseVideo(path string) *Video {
 	video := &Video{
 		TeacherName:   teacherName,
 		LessonNumber:  lessionNumber,
-		LessionTitle:  lessionTitle,
-		LectureNumber: lectureNumber,
-		LectureTitle:  lectureTitle,
+		LessionName:   lessionTitle,
+		LectureNumber: uint(lectureNumber),
+		LectureName:   lectureTitle,
 		SubjectName:   subjectName,
 		SubjectType:   subjectType,
-		Class:         classNumber,
+		Class:         uint(classNumber),
 		VideoURL:      path,
 	}
 
