@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/deerwalkrnd/dlc-desktop-app/api"
 	"github.com/deerwalkrnd/dlc-desktop-app/data"
 	db "github.com/deerwalkrnd/dlc-desktop-app/db"
 )
@@ -37,13 +38,15 @@ func init() {
 
 	}
 }
-
 func main() {
 	outputPath := "./web/build"
 
+	mainMux := http.NewServeMux()
+	apiMux := api.GetApiMux()
+
 	fs := http.FileServer(http.Dir(outputPath))
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	mainMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		path := filepath.Join(outputPath, r.URL.Path)
 		_, err := os.Stat(path)
 
@@ -55,8 +58,10 @@ func main() {
 		fs.ServeHTTP(w, r)
 	})
 
+	mainMux.Handle("/api/", http.StripPrefix("/api", apiMux))
+
 	log.Print("Listening on :3000...")
-	err := http.ListenAndServe(":3000", nil)
+	err := http.ListenAndServe(":3000", mainMux)
 	if err != nil {
 		log.Fatal(err)
 	}
