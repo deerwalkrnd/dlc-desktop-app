@@ -15,13 +15,25 @@
 	];
 </script>
 
-<div class="flex flex-col p-5">
-	<h1>Choose Your Class</h1>
-	<div class="flex flex-row flex-wrap items-center justify-center gap-5">
-		{#each classes as classItem}
-			<a href={`/class/${classItem.href}`}>
-				<Figure name={classItem.name} bgColor={classItem.bgColor} />
-			</a>
-		{/each}
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-6 py-12 lg:px-8">
+	<div class="mx-auto max-w-7xl">
+		<div class="mb-12 text-center">
+			<h1 class="mb-4 text-4xl font-bold text-gray-900">Choose Your Class</h1>
+		</div>
+
+		<div class="grid grid-cols-2 gap-6 lg:grid-cols-3 xl:grid-cols-5">
+			{#each classes as classItem}
+				<a
+					href={`/class/${classItem.href}`}
+					class="transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+				>
+					<div class="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-md">
+						<div class={`${classItem.bgColor} flex h-24 items-center justify-center`}>
+							<span class="text-4xl font-bold text-white">{classItem.name}</span>
+						</div>
+					</div>
+				</a>
+			{/each}
+		</div>
 	</div>
 </div>

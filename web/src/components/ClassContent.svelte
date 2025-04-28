@@ -1,20 +1,18 @@
 <script lang="ts">
-	import SubjectCard from './SubjectCard.svelte';
 	import EmptyState from './EmptyState.svelte';
+	import SubjectCard from './SubjectCard.svelte';
 
-	export let classData:
-		| {
-				subjects?: Array<any>;
-		  }
-		| undefined;
+	export let subjectData: {
+		subjects?: Array<any>;
+	};
 </script>
 
-{#if classData?.subjects?.length}
-	<div class="grid gap-8">
-		{#each classData.subjects as subject}
+{#if subjectData?.subjects?.length}
+	<div class="grid grid-cols-3 gap-8">
+		{#each subjectData.subjects as subject}
 			<SubjectCard {subject} />
 		{/each}
 	</div>
 {:else}
-	<EmptyState message="No class data available" />
+	<EmptyState message="No class Data availabe" />
 {/if}

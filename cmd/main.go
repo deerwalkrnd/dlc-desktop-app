@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	outputPath := "./web/built"
+	outputPath := "./web/build"
 
 	fs := http.FileServer(http.Dir(outputPath))
 
