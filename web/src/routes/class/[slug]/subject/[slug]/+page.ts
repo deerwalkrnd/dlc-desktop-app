@@ -2,13 +2,20 @@ import { APIURL } from '$lib/constant';
 
 export const load = async ({ params }: { params: any }) => {
 	const subjectName = params.slug.toLowerCase();
-	console.log(params);
 	const subject = subjectName.split('-');
-	console.log(subject[1]);
 
-	const res = await fetch(`${APIURL}/subjects/${subject[1]}/lectures`);
-	const data = await res.json();
+	const lectureRes = await fetch(`${APIURL}/subjects/${subject[1]}/lectures`);
+	const lecturesData = await lectureRes.json();
+
+	const lessonPromises = lecturesData.lectures.map(async (lecture: any) => {
+		const lessonRes = await fetch(`${APIURL}/lectures/${lecture.ID}/lessons`);
+		const lessonData = await lessonRes.json();
+		return lessonData.lessons;
+	});
+
+	const lessons = await Promise.all(lessonPromises);
 	return {
-		subjectData: data
+		subjectData: lecturesData,
+		lessons
 	};
 };
