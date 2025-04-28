@@ -54,7 +54,7 @@ func main() {
 		StaticPath: outputPath,
 		IndexPath:  "index.html",
 	}
-	apiHandler := api.GetApiMux()
+	apiHandler := api.GetApiRouter()
 	apiHandler.SetupRoutes(mainRouter)
 
 	mainRouter.PathPrefix("/").Handler(spaHandler)

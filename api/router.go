@@ -6,7 +6,7 @@ import (
 	"github.com/deerwalkrnd/dlc-desktop-app/db"
 )
 
-func GetApiMux() *ApiHandler {
+func GetApiRouter() *ApiHandler {
 
 	db, err := db.GetDB()
 
