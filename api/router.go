@@ -18,8 +18,9 @@ func GetApiMux() *http.ServeMux {
 
 	apiHandler := NewApiHandler(db)
 
-	ApiMux.HandleFunc("/teachers", apiHandler.GetTeachers)
-	ApiMux.HandleFunc("/classes", apiHandler.GetClasses)
+	ApiMux.HandleFunc("GET /teachers", apiHandler.GetTeachers)
+	ApiMux.HandleFunc("GET /classes", apiHandler.GetClasses)
+	ApiMux.HandleFunc("GET /class", apiHandler.GetLecturesByClass)
 
 	return ApiMux
 }
