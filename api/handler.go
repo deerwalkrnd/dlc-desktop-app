@@ -21,7 +21,7 @@ func NewApiHandler(db *gorm.DB) *ApiHandler {
 func (a *ApiHandler) GetTeachers(w http.ResponseWriter, r *http.Request) {
 	var teachers []db.Teacher
 
-	result := a.db.Find(&teachers)
+	result := a.db.Find(&teachers).Order("name asc")
 
 	if result.Error != nil {
 		respondWithJSON(
@@ -40,6 +40,31 @@ func (a *ApiHandler) GetTeachers(w http.ResponseWriter, r *http.Request) {
 		map[string]interface{}{
 			"teachers": teachers,
 			"count":    len(teachers),
+		},
+	)
+}
+func (a *ApiHandler) GetClasses(w http.ResponseWriter, r *http.Request) {
+	var classes []db.Class
+
+	result := a.db.Find(&classes).Statement.Order("number asc")
+
+	if result.Error != nil {
+		respondWithJSON(
+			w,
+			http.StatusInternalServerError,
+			map[string]string{
+				"error": result.Error.Error(),
+			},
+		)
+		return
+	}
+
+	respondWithJSON(
+		w,
+		http.StatusOK,
+		map[string]interface{}{
+			"classes": classes,
+			"count":   len(classes),
 		},
 	)
 }
