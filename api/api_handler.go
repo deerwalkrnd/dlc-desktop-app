@@ -139,6 +139,7 @@ func (a *ApiHandler) GetSubjectsByClass(w http.ResponseWriter, r *http.Request) 
 }
 
 func (a *ApiHandler) GetLecturesBySubject(w http.ResponseWriter, r *http.Request) {
+	enableCORS(w)
 	vars := mux.Vars(r)
 	subjectId := vars["subjectId"]
 	_, err := strconv.Atoi(subjectId)
@@ -183,6 +184,7 @@ func (a *ApiHandler) GetLecturesBySubject(w http.ResponseWriter, r *http.Request
 }
 
 func (a *ApiHandler) GetLessonsByLecture(w http.ResponseWriter, r *http.Request) {
+	enableCORS(w)
 	vars := mux.Vars(r)
 	lectureId := vars["lectureId"]
 	_, err := strconv.Atoi(lectureId)
