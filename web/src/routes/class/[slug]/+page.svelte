@@ -15,10 +15,6 @@
 	<Header classNumber={data.getClass.Number} />
 
 	<div class="flex flex-1 flex-col md:flex-row">
-		<!-- <aside class="w-full bg-white p-4 shadow-md md:w-64">
-			<Sidebar subjects={data.classData?.subjects} />
-		</aside> -->
-
 		<main class="flex-1 p-6">
 			<ClassContent subjectData={data.getClass.Subjects} />
 		</main>

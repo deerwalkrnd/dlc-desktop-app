@@ -2,7 +2,7 @@
 	import { navigating, page } from '$app/state';
 	import { onMount } from 'svelte';
 	import LectureCard from './LectureCard.svelte';
-	import { ProductionUrl } from '$lib/Constant';
+	import { ProductionUrl } from '$lib/constant';
 
 	export let subject: {
 		name: string;
