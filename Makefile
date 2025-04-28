@@ -12,6 +12,7 @@ MAIN_PACKAGE = ./cmd/main.go
 
 # Output binary name
 BINARY_NAME = $(BINDIR)/$(executable_name)
+DATABASE_NAME = "./dlc.sqlite"
 
 # Build flags for size optimization
 # -ldflags="-s -w": 
@@ -21,7 +22,7 @@ BINARY_NAME = $(BINDIR)/$(executable_name)
 GO_BUILD_FLAGS = -ldflags="-s -w" -trimpath
 
 .PHONY: all
-all: clean setup build
+all: clean setup build 
 
 .PHONY: setup
 setup:
@@ -35,6 +36,7 @@ build:
 .PHONY: clean
 clean:
 	@if exist $(BINDIR) rmdir /S /Q $(BINDIR)
+	@if exist $(DATABASE_NAME) del $(DATABASE_NAME)
 
 .PHONY: gui
 gui: clean setup
@@ -50,3 +52,7 @@ nocgo: clean setup
 release: clean setup
 	set GOOS=windows && set GOARCH=amd64 && set CGO_ENABLED=0 && $(GO) build $(GO_BUILD_FLAGS) -o $(BINARY_NAME) $(MAIN_PACKAGE)
 	@echo Release build complete.
+
+.PHONY: remove_db
+remove_db:
+	rm ./dlc.sqlite
