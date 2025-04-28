@@ -1,14 +1,17 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/deerwalkrnd/dlc-desktop-app/api"
 	"github.com/deerwalkrnd/dlc-desktop-app/data"
 	db "github.com/deerwalkrnd/dlc-desktop-app/db"
+	"github.com/gorilla/mux"
 )
 
 var Logger = log.Default()
@@ -41,28 +44,29 @@ func init() {
 func main() {
 	outputPath := "./web/build"
 
-	mainMux := http.NewServeMux()
-	apiMux := api.GetApiMux()
+	mainRouter := mux.NewRouter()
 
-	fs := http.FileServer(http.Dir(outputPath))
-
-	mainMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		path := filepath.Join(outputPath, r.URL.Path)
-		_, err := os.Stat(path)
-
-		if os.IsNotExist(err) && filepath.Ext(r.URL.Path) == "" {
-			http.ServeFile(w, r, filepath.Join(outputPath, "index.html"))
-			return
-		}
-
-		fs.ServeHTTP(w, r)
+	mainRouter.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(map[string]bool{"ok": true})
 	})
 
-	mainMux.Handle("/api/", http.StripPrefix("/api", apiMux))
+	spaHandler := api.SpaHandler{
+		StaticPath: outputPath,
+		IndexPath:  "index.html",
+	}
+	apiHandler := api.GetApiRouter()
+	apiHandler.SetupRoutes(mainRouter)
+
+	mainRouter.PathPrefix("/").Handler(spaHandler)
+
+	srv := &http.Server{
+		Handler:      mainRouter,
+		Addr:         "127.0.0.1:3000",
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  15 * time.Second,
+	}
 
 	log.Print("Listening on :3000...")
-	err := http.ListenAndServe(":3000", mainMux)
-	if err != nil {
-		log.Fatal(err)
-	}
+	log.Fatal(srv.ListenAndServe())
+
 }

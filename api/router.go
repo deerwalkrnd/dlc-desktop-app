@@ -2,14 +2,12 @@ package api
 
 import (
 	"log"
-	"net/http"
 
 	"github.com/deerwalkrnd/dlc-desktop-app/db"
 )
 
-func GetApiMux() *http.ServeMux {
+func GetApiRouter() *ApiHandler {
 
-	var ApiMux = http.NewServeMux()
 	db, err := db.GetDB()
 
 	if err != nil {
@@ -18,9 +16,5 @@ func GetApiMux() *http.ServeMux {
 
 	apiHandler := NewApiHandler(db)
 
-	ApiMux.HandleFunc("GET /teachers", apiHandler.GetTeachers)
-	ApiMux.HandleFunc("GET /classes", apiHandler.GetClasses)
-	ApiMux.HandleFunc("GET /class", apiHandler.GetLecturesByClass)
-
-	return ApiMux
+	return apiHandler
 }
