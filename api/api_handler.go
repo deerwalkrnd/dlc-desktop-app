@@ -24,6 +24,7 @@ func (a *ApiHandler) SetupRoutes(router *mux.Router) {
 	router.HandleFunc("/api/classes", a.GetClasses).Methods("GET")
 	router.HandleFunc("/api/classes/{classID}/subjects", a.GetSubjectsByClass).Methods("GET")
 	router.HandleFunc("/api/subjects/{subjectId}/lectures", a.GetLecturesBySubject).Methods("GET")
+	router.HandleFunc("/api/lectures/{lectureId}/lessons", a.GetLessonsByLecture).Methods("GET")
 }
 
 func (a *ApiHandler) GetTeachers(w http.ResponseWriter, r *http.Request) {
@@ -147,7 +148,7 @@ func (a *ApiHandler) GetLecturesBySubject(w http.ResponseWriter, r *http.Request
 			w,
 			http.StatusBadRequest,
 			map[string]string{
-				"error": "Invalid class ID",
+				"error": "Invalid subject ID",
 			},
 		)
 		return
@@ -176,6 +177,49 @@ func (a *ApiHandler) GetLecturesBySubject(w http.ResponseWriter, r *http.Request
 		map[string]interface{}{
 			"lectures": lectures,
 			"count":    len(lectures),
+		},
+	)
+
+}
+
+func (a *ApiHandler) GetLessonsByLecture(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	lectureId := vars["lectureId"]
+	_, err := strconv.Atoi(lectureId)
+
+	if err != nil {
+		respondWithJSON(
+			w,
+			http.StatusBadRequest,
+			map[string]string{
+				"error": "Invalid lecture ID",
+			},
+		)
+		return
+	}
+
+	var lessons []db.Lesson
+	query := a.db.Where("lecture_id = ?", lectureId)
+
+	result := query.Joins("Teacher").Find(&lessons)
+
+	if result.Error != nil {
+		respondWithJSON(
+			w,
+			http.StatusInternalServerError,
+			map[string]string{
+				"error": result.Error.Error(),
+			},
+		)
+		return
+	}
+
+	respondWithJSON(
+		w,
+		http.StatusOK,
+		map[string]interface{}{
+			"lessons": lessons,
+			"count":   len(lessons),
 		},
 	)
 
