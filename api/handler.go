@@ -1,7 +1,9 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/deerwalkrnd/dlc-desktop-app/db"
 	"gorm.io/gorm"
@@ -19,6 +21,7 @@ func NewApiHandler(db *gorm.DB) *ApiHandler {
 }
 
 func (a *ApiHandler) GetTeachers(w http.ResponseWriter, r *http.Request) {
+	enableCORS(w)
 	var teachers []db.Teacher
 
 	result := a.db.Find(&teachers).Order("name asc")
@@ -44,6 +47,7 @@ func (a *ApiHandler) GetTeachers(w http.ResponseWriter, r *http.Request) {
 	)
 }
 func (a *ApiHandler) GetClasses(w http.ResponseWriter, r *http.Request) {
+	enableCORS(w)
 	var classes []db.Class
 
 	result := a.db.Find(&classes).Statement.Order("number asc")
@@ -67,4 +71,19 @@ func (a *ApiHandler) GetClasses(w http.ResponseWriter, r *http.Request) {
 			"count":   len(classes),
 		},
 	)
+}
+
+func (a *ApiHandler) GetLecturesByClass(w http.ResponseWriter, r *http.Request) {
+	enableCORS(w)
+	pathParts := strings.Split(r.URL.Path, "/")
+	if len(pathParts) < 3 {
+		http.Error(w, "Invalid class ID", http.StatusBadRequest)
+		return
+	}
+
+	classID := pathParts[2]
+
+	typeParam := r.URL.Query().Get("type")
+
+	fmt.Fprintf(w, "Class ID: %s, Type: %s", classID, typeParam)
 }
