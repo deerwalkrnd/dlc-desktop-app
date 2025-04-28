@@ -1,18 +1,15 @@
-import { classes, getNestedData } from '$lib/data';
+import { APIURL } from '$lib/constant';
 import { error } from '@sveltejs/kit';
 export const load = async ({ params }: { params: any }) => {
 	const classNumber = parseInt(params.slug, 10);
-	const allClasses = getNestedData();
+	const res = await fetch(`${APIURL}/classes`);
+	const data = await res.json();
 
-	const singleClass = allClasses.find((cls) => cls.id === classNumber);
-	if (!singleClass) {
+	let getClass = data.classes.find((singleClass: any) => singleClass.Number === classNumber);
+	if (getClass) {
 		return {
-			status: 404,
-			error: new Error(`Class ${classNumber} not found `)
+			getClass
 		};
 	}
-
-	return {
-		classData: singleClass
-	};
+	error(404, 'Not found');
 };
