@@ -22,7 +22,7 @@ func NewApiHandler(db *gorm.DB) *ApiHandler {
 func (a *ApiHandler) SetupRoutes(router *mux.Router) {
 	router.HandleFunc("/api/teachers", a.GetTeachers).Methods("GET")
 	router.HandleFunc("/api/classes", a.GetClasses).Methods("GET")
-	router.HandleFunc("/api/classes/{classID}/lectures", a.GetSubjectsByClass).Methods("GET")
+	router.HandleFunc("/api/classes/{classID}/subjects", a.GetSubjectsByClass).Methods("GET")
 }
 
 func (a *ApiHandler) GetTeachers(w http.ResponseWriter, r *http.Request) {
@@ -86,8 +86,14 @@ func (a *ApiHandler) GetSubjectsByClass(w http.ResponseWriter, r *http.Request) 
 	classID := vars["classID"]
 
 	typeParam := r.URL.Query().Get("type")
+	type_ := db.NEW_SYLLABUS
+
+	if typeParam == "" || typeParam == "old" {
+		type_ = db.OLD_SYLLABUS
+	}
 
 	_, err := strconv.Atoi(classID)
+
 	if err != nil {
 		respondWithJSON(
 			w,
@@ -99,14 +105,15 @@ func (a *ApiHandler) GetSubjectsByClass(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	var lectures []db.Subject
+	var subjects []db.Subject
+
 	query := a.db.Where("class_id = ?", classID)
 
 	if typeParam != "" {
-		query = query.Where("type = ?", typeParam)
+		query = query.Where("type = ?", type_)
 	}
 
-	result := query.Find(&lectures)
+	result := query.Find(&subjects)
 
 	if result.Error != nil {
 		respondWithJSON(
@@ -123,8 +130,8 @@ func (a *ApiHandler) GetSubjectsByClass(w http.ResponseWriter, r *http.Request) 
 		w,
 		http.StatusOK,
 		map[string]interface{}{
-			"subjects": lectures,
-			"count":    len(lectures),
+			"subjects": subjects,
+			"count":    len(subjects),
 		},
 	)
 }
