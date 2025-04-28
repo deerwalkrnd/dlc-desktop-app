@@ -45,6 +45,7 @@ func main() {
 	outputPath := "./web/build"
 
 	mainRouter := mux.NewRouter()
+
 	mainRouter.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]bool{"ok": true})
 	})
@@ -53,6 +54,9 @@ func main() {
 		StaticPath: outputPath,
 		IndexPath:  "index.html",
 	}
+	apiHandler := api.GetApiMux()
+	apiHandler.SetupRoutes(mainRouter)
+
 	mainRouter.PathPrefix("/").Handler(spaHandler)
 
 	srv := &http.Server{
@@ -61,8 +65,6 @@ func main() {
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-
-	// apiMux := api.GetApiMux()
 
 	log.Print("Listening on :3000...")
 	log.Fatal(srv.ListenAndServe())

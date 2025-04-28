@@ -20,9 +20,9 @@ func NewApiHandler(db *gorm.DB) *ApiHandler {
 }
 
 func (a *ApiHandler) SetupRoutes(router *mux.Router) {
-	router.HandleFunc("/teachers", a.GetTeachers).Methods("GET")
-	router.HandleFunc("/classes", a.GetClasses).Methods("GET")
-	router.HandleFunc("/classes/{classID}/lectures", a.GetLecturesByClass).Methods("GET")
+	router.HandleFunc("/api/teachers", a.GetTeachers).Methods("GET")
+	router.HandleFunc("/api/classes", a.GetClasses).Methods("GET")
+	router.HandleFunc("/api/classes/{classID}/lectures", a.GetSubjectsByClass).Methods("GET")
 }
 
 func (a *ApiHandler) GetTeachers(w http.ResponseWriter, r *http.Request) {
@@ -79,7 +79,7 @@ func (a *ApiHandler) GetClasses(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (a *ApiHandler) GetLecturesByClass(w http.ResponseWriter, r *http.Request) {
+func (a *ApiHandler) GetSubjectsByClass(w http.ResponseWriter, r *http.Request) {
 	enableCORS(w)
 
 	vars := mux.Vars(r)
@@ -99,7 +99,7 @@ func (a *ApiHandler) GetLecturesByClass(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	var lectures []db.Lecture
+	var lectures []db.Subject
 	query := a.db.Where("class_id = ?", classID)
 
 	if typeParam != "" {
@@ -123,7 +123,7 @@ func (a *ApiHandler) GetLecturesByClass(w http.ResponseWriter, r *http.Request) 
 		w,
 		http.StatusOK,
 		map[string]interface{}{
-			"lectures": lectures,
+			"subjects": lectures,
 			"count":    len(lectures),
 		},
 	)
