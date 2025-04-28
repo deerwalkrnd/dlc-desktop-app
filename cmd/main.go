@@ -54,9 +54,10 @@ func main() {
 		StaticPath: outputPath,
 		IndexPath:  "index.html",
 	}
-	apiHandler := api.GetApiRouter()
-	apiHandler.SetupRoutes(mainRouter)
 
+	apiHandler := api.GetApiRouter()
+
+	apiHandler.SetupRoutes(mainRouter)
 	mainRouter.PathPrefix("/").Handler(spaHandler)
 
 	srv := &http.Server{
