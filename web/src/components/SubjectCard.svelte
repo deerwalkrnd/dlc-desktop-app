@@ -4,20 +4,14 @@
 	import LectureCard from './LectureCard.svelte';
 	import { ProductionUrl } from '$lib/constant';
 
-	export let subject: {
-		name: string;
-		lectures: Array<any>;
-	};
+	let { subject } = $props();
 	let currentPath = page.url.pathname;
-	onMount(() => {
-		console.log(ProductionUrl);
-	});
 </script>
 
 <section class="rounded-lg bg-white p-6 shadow-lg">
-	<a href={`${ProductionUrl}${currentPath}/subject/${subject.name}`}>
+	<a href={`${ProductionUrl}${currentPath}/subject/${subject.Name}-${subject.ID}`}>
 		<h2 class="mb-4 border-slate-200 pb-2 text-2xl font-semibold text-indigo-800">
-			{subject.name}
+			{subject.Name}
 		</h2>
 	</a>
 

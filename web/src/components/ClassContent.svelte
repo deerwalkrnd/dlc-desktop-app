@@ -1,10 +1,7 @@
 <script lang="ts">
 	import EmptyState from './EmptyState.svelte';
 	import SubjectCard from './SubjectCard.svelte';
-
-	export let subjectData: {
-		subjects?: Array<any>;
-	};
+	let { subjectData } = $props();
 </script>
 
 {#if subjectData?.subjects?.length}

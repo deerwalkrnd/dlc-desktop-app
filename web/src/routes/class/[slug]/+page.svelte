@@ -16,7 +16,7 @@
 
 	<div class="flex flex-1 flex-col md:flex-row">
 		<main class="flex-1 p-6">
-			<ClassContent subjectData={data.getClass.Subjects} />
+			<ClassContent subjectData={data.subjects} />
 		</main>
 	</div>
 </div>
