@@ -1,14 +1,24 @@
 package api
 
-import "net/http"
+import (
+	"log"
+	"net/http"
+
+	"github.com/deerwalkrnd/dlc-desktop-app/db"
+)
 
 func GetApiMux() *http.ServeMux {
-	var ApiMux = http.NewServeMux()
 
-	ApiMux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"users": ["John", "Jane", "Bob"]}`))
-	})
+	var ApiMux = http.NewServeMux()
+	db, err := db.GetDB()
+
+	if err != nil {
+		log.Fatalln("error: ", err.Error())
+	}
+
+	apiHandler := NewApiHandler(db)
+
+	ApiMux.HandleFunc("/teachers", apiHandler.GetTeachers)
 
 	return ApiMux
 }
