@@ -10,10 +10,9 @@
 			name: string;
 		};
 	};
-	$: currentPath = page.url.pathname;
-	$: ProductionUrl;
+	let currentPath = page.url.pathname;
 	onMount(() => {
-		$: console.log(currentPath, ProductionUrl);
+		console.log(currentPath, ProductionUrl);
 	});
 </script>
 

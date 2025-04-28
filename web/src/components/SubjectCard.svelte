@@ -8,8 +8,7 @@
 		name: string;
 		lectures: Array<any>;
 	};
-	$: currentPath = page.url.pathname;
-	$: ProductionUrl;
+	let currentPath = page.url.pathname;
 	onMount(() => {
 		console.log(ProductionUrl);
 	});
