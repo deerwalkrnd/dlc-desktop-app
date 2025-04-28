@@ -1,13 +1,24 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import VideoDialog from './VideoDialog.svelte';
+	import CloseButton from './CloseButton.svelte';
 
 	let { lectures, lessons } = $props();
 	console.log(lessons);
-	// import logo from '../../../DLC'
 	let dialog: any;
+	let videoElement: HTMLVideoElement | null;
+
 	onMount(() => {
 		dialog = document.getElementById('confirmation-dialog');
+		videoElement = document.querySelector('#video-player');
+
+		if (dialog) {
+			dialog.addEventListener('close', () => {
+				if (videoElement) {
+					videoElement.pause();
+					videoElement.currentTime = 0;
+				}
+			});
+		}
 	});
 
 	const showDialogClick = (asModal = true) => {
@@ -17,7 +28,12 @@
 			console.log(e);
 		}
 	};
+
 	const closeClick = () => {
+		if (videoElement) {
+			videoElement.pause();
+			videoElement.currentTime = 0;
+		}
 		dialog.close();
 	};
 </script>
@@ -44,14 +60,47 @@
 {#snippet Lecture(lectureId: number, lectureName: string, lectureNumber: number, videoUrl: string)}
 	<div class="rounded-md bg-indigo-50 p-3 transition-colors duration-200 hover:bg-indigo-100">
 		<h3
-			class="flex items-center text-lg font-semibold text-gray-800"
-			on:click={() => showDialogClick(true)}
+			class="flex cursor-pointer items-center text-lg font-semibold text-gray-800"
+			onclick={() => showDialogClick(true)}
 		>
 			<span class="mr-2 text-indigo-600">Lecture {lectureNumber}:</span>
 			{lectureName}
 		</h3>
-		<VideoDialog {videoUrl} />
+
+		{@render VideoDialog('Lecture ' + lectureNumber + ' : ' + lectureName, videoUrl, closeClick)}
 	</div>
+{/snippet}
+
+{#snippet VideoDialog(lectureName: string, videoUrl: string, closeClick: () => void)}
+	<dialog
+		id="confirmation-dialog"
+		class="fixed inset-0 m-auto w-full max-w-5xl rounded-lg bg-blue-500 p-6 shadow-2xl"
+	>
+		<div class="flex flex-col">
+			<div class="mb-4 flex items-center justify-between">
+				<h2 class="text-xl font-bold text-white">{lectureName}</h2>
+				<CloseButton {closeClick} />
+			</div>
+
+			<div class="overflow-hidden rounded-lg bg-black">
+				<video id="video-player" width="100%" controls class="aspect-video">
+					<source
+						src={'/video/Aayushman%20Joshi%20-%205.1%20-%20Statistics%20-%201%20-%20Mean,%20Median,%20and%20Mode%20-%20Mathematics%20-%20OLD%20-%208%20.mp4'}
+					/>
+					Your browser does not support the video tag.
+				</video>
+			</div>
+
+			<div class="mt-4 flex justify-end">
+				<button
+					onclick={closeClick}
+					class="rounded-md bg-red-500 px-6 py-2 font-medium text-white transition-colors hover:bg-red-700"
+				>
+					Close
+				</button>
+			</div>
+		</div>
+	</dialog>
 {/snippet}
 
 <div class="flex min-h-screen flex-col gap-6 bg-gray-50 p-8">
