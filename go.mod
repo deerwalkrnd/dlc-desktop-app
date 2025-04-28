@@ -4,6 +4,7 @@ go 1.23.6
 
 require (
 	github.com/glebarez/sqlite v1.11.0
+	github.com/gorilla/mux v1.8.1
 	gorm.io/gorm v1.26.0
 )
 
