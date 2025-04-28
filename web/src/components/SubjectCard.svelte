@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { navigating, page } from '$app/state';
-	import { ProductionUrl } from '$lib/Consntant';
 	import { onMount } from 'svelte';
 	import LectureCard from './LectureCard.svelte';
+	import { ProductionUrl } from '$lib/Constant';
 
 	export let subject: {
 		name: string;

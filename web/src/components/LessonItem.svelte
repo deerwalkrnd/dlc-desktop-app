@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { ProductionUrl } from '$lib/Consntant';
-	import { lectures } from '$lib/data';
+	import { ProductionUrl } from '$lib/Constant';
 	import { onMount } from 'svelte';
 
 	export let lesson: {
