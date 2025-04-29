@@ -45,7 +45,7 @@
 		<h1 class="mb-4 border-b pb-2 text-2xl font-bold text-indigo-700">
 			Lesson {lessonNumber}: {lessonName}
 		</h1>
-		<div class="ml-4 mt-2 space-y-3">
+		<div class="mt-2 ml-4 space-y-3">
 			{#each lectures as lecture}
 				{#if lecture.ID == lessonId}
 					<div>
@@ -85,9 +85,7 @@
 			<div class="overflow-hidden rounded-lg bg-black">
 				<video id="video-player" width="100%" controls class="aspect-video">
 					<track kind="captions" />
-					<source
-						src={videoUrl}
-					/>
+					<source src={videoUrl} />
 					Your browser does not support the video tag.
 				</video>
 			</div>
