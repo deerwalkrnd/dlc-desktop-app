@@ -36,7 +36,7 @@
 			{/each}
 
 			{#if subjects.length === 0}
-				<li class="px-4 py-3 text-sm italic text-gray-500">No subjects available</li>
+				<li class="px-4 py-3 text-sm text-gray-500 italic">No subjects available</li>
 			{/if}
 		</ul>
 	</nav>

@@ -46,7 +46,7 @@
 			Lesson {lessonNumber}: {lessonName}
 			{lessonId}
 		</h1>
-		<div class="ml-4 mt-2 space-y-3">
+		<div class="mt-2 ml-4 space-y-3">
 			{#each lectures as lecture}
 				{#if lecture.ID == lessonId}
 					<div>
