@@ -84,6 +84,7 @@
 
 			<div class="overflow-hidden rounded-lg bg-black">
 				<video id="video-player" width="100%" controls class="aspect-video">
+					<track kind="captions" />
 					<source
 						src={'/video/Aayushman%20Joshi%20-%205.1%20-%20Statistics%20-%201%20-%20Mean,%20Median,%20and%20Mode%20-%20Mathematics%20-%20OLD%20-%208%20.mp4'}
 					/>
