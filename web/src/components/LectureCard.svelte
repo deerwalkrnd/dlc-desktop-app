@@ -44,6 +44,7 @@
 	>
 		<h1 class="mb-4 border-b pb-2 text-2xl font-bold text-indigo-700">
 			Lesson {lessonNumber}: {lessonName}
+			{lessonId}
 		</h1>
 		<div class="mt-2 ml-4 space-y-3">
 			{#each lectures as lecture}
@@ -66,7 +67,7 @@
 			<span class="mr-2 text-indigo-600">Lecture {lectureNumber}:</span>
 			{lectureName}
 		</h3>
-
+		{videoUrl}
 		{@render VideoDialog('Lecture ' + lectureNumber + ' : ' + lectureName, videoUrl, closeClick)}
 	</div>
 {/snippet}
