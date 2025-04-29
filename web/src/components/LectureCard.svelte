@@ -44,6 +44,7 @@
 	>
 		<h1 class="mb-4 border-b pb-2 text-2xl font-bold text-indigo-700">
 			Lesson {lessonNumber}: {lessonName}
+			{lessonId}
 		</h1>
 		<div class="ml-4 mt-2 space-y-3">
 			{#each lectures as lecture}
@@ -66,7 +67,7 @@
 			<span class="mr-2 text-indigo-600">Lecture {lectureNumber}:</span>
 			{lectureName}
 		</h3>
-
+		{videoUrl}
 		{@render VideoDialog('Lecture ' + lectureNumber + ' : ' + lectureName, videoUrl, closeClick)}
 	</div>
 {/snippet}
@@ -85,9 +86,7 @@
 			<div class="overflow-hidden rounded-lg bg-black">
 				<video id="video-player" width="100%" controls class="aspect-video">
 					<track kind="captions" />
-					<source
-						src={videoUrl}
-					/>
+					<source src={videoUrl} />
 					Your browser does not support the video tag.
 				</video>
 			</div>
