@@ -16,6 +16,8 @@ import (
 
 var Logger = log.Default()
 
+const DATA_FOLDER string = "DLC"
+
 func init() {
 	Logger.Println("Started DLC Desktop Application")
 
@@ -31,7 +33,7 @@ func init() {
 
 		Logger.Println("Database Migration Finished")
 
-		dataPath, _ := filepath.Abs("DLC")
+		dataPath, _ := filepath.Abs(DATA_FOLDER)
 
 		err = data.Initialize(dataPath, DB)
 
@@ -49,6 +51,9 @@ func main() {
 	mainRouter.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]bool{"ok": true})
 	})
+
+	mainRouter.PathPrefix("/videos/").Handler(http.StripPrefix("/videos/",
+		http.FileServer(http.Dir("./"+DATA_FOLDER)))).Methods("GET")
 
 	spaHandler := api.SpaHandler{
 		StaticPath: outputPath,

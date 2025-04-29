@@ -97,7 +97,7 @@ func ParseVideo(path string) *Video {
 		LectureNumber: uint(lectureNumber),
 		SubjectType:   subjectType,
 		Class:         uint(classNumber),
-		VideoURL:      path,
+		VideoURL:      basePath,
 	}
 
 	return video
