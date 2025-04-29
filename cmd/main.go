@@ -51,9 +51,9 @@ func main() {
 	mainRouter.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]bool{"ok": true})
 	})
-
-	mainRouter.PathPrefix("/videos/").Handler(http.StripPrefix("/videos/",
-		http.FileServer(http.Dir("./"+DATA_FOLDER)))).Methods("GET")
+	videoDir := http.Dir("./" + DATA_FOLDER)
+	videoRouter := mainRouter.PathPrefix("/videos/").Subrouter()
+	videoRouter.PathPrefix("/").Handler(http.StripPrefix("/videos/", api.VideoHandler(videoDir))).Methods("GET", "OPTIONS")
 
 	spaHandler := api.SpaHandler{
 		StaticPath: outputPath,
