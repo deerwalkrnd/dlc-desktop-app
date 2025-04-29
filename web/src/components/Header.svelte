@@ -2,6 +2,8 @@
 	export let classNumber: number | undefined;
 </script>
 
-<header class="bg-indigo-600 p-6 text-white shadow-md">
-	<h1 class="text-3xl font-bold">Class {classNumber}</h1>
-</header>
+<div class="bg-white px-10 py-10 shadow-md">
+	<div class="mx-auto max-w-6xl">
+		<h1 class="mb-2 text-center text-3xl font-bold text-blue-800">Class {classNumber}</h1>
+	</div>
+</div>

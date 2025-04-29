@@ -2,7 +2,11 @@
 	export let closeClick: () => void;
 </script>
 
-<button onclick={closeClick} class="text-gray-300 transition-colors hover:text-white">
+<button
+	onclick={closeClick}
+	class="text-gray-300 transition-colors hover:text-white"
+	aria-label="close-button"
+>
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
 		width="24"

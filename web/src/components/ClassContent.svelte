@@ -5,7 +5,7 @@
 </script>
 
 {#if subjectData?.subjects?.length}
-	<div class="grid grid-cols-3 gap-8">
+	<div class="grid grid-cols-4 gap-8">
 		{#each subjectData.subjects as subject}
 			<SubjectCard {subject} />
 		{/each}

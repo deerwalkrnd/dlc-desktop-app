@@ -2,13 +2,9 @@
 	import ClassContent from '$components/ClassContent.svelte';
 	import { onMount } from 'svelte';
 	import Header from '../../../components/Header.svelte';
-	import Sidebar from '../../../components/Sidebar.svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	onMount(() => {
-		console.log(data);
-	});
 </script>
 
 <div class="flex min-h-screen flex-col bg-slate-50">
