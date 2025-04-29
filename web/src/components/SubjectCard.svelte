@@ -9,7 +9,7 @@
 </script>
 
 <section class="rounded-lg bg-white p-6 shadow-lg">
-	<a href={`${ProductionUrl}${currentPath}/subject/${subject.Name}-${subject.ID}`}>
+	<a href={`${currentPath}/subject/${subject.Name}-${subject.ID}`}>
 		<h2 class="mb-4 border-slate-200 pb-2 text-2xl font-semibold text-indigo-800">
 			{subject.Name}
 		</h2>

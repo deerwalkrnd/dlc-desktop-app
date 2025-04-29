@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import CloseButton from './CloseButton.svelte';
+	import { APIURL, MEDIAURL } from '$lib/constant';
 
 	let { lectures, lessons } = $props();
 	console.log(lessons);
@@ -46,7 +47,7 @@
 			Lesson {lessonNumber}: {lessonName}
 			{lessonId}
 		</h1>
-		<div class="mt-2 ml-4 space-y-3">
+		<div class="ml-4 mt-2 space-y-3">
 			{#each lectures as lecture}
 				{#if lecture.ID == lessonId}
 					<div>
@@ -86,7 +87,7 @@
 			<div class="overflow-hidden rounded-lg bg-black">
 				<video id="video-player" width="100%" controls class="aspect-video">
 					<track kind="captions" />
-					<source src={videoUrl} />
+					<source src={`${MEDIAURL}/videoUrl`} />
 					Your browser does not support the video tag.
 				</video>
 			</div>
