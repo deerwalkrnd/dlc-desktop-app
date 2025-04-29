@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import CloseButton from './CloseButton.svelte';
-	import { APIURL, MEDIAURL } from '$lib/constant';
+	import { MEDIAURL } from '$lib/constant';
 
 	let { lectures, lessons } = $props();
 	console.log(lessons);
@@ -87,7 +87,7 @@
 			<div class="overflow-hidden rounded-lg bg-black">
 				<video id="video-player" width="100%" controls class="aspect-video">
 					<track kind="captions" />
-					<source src={`${MEDIAURL}/videoUrl`} />
+					<source src={`${MEDIAURL}/videos/${videoUrl}`} />
 					Your browser does not support the video tag.
 				</video>
 			</div>
