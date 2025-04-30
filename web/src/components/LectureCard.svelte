@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Controls } from '$lib/controls';
 	import { onMount } from 'svelte';
 	import CloseButton from './CloseButton.svelte';
 	import { MEDIAURL } from '$lib/constant';
@@ -10,6 +11,7 @@
 	onMount(() => {
 		dialog = document.getElementById('confirmation-dialog');
 		videoElement = document.querySelector('#video-player');
+		Controls();
 
 		if (dialog) {
 			dialog.addEventListener('close', () => {
@@ -85,12 +87,77 @@
 				<CloseButton {closeClick} />
 			</div>
 
-			<div class="overflow-hidden rounded-lg bg-black">
-				<video id="video-player" width="100%" controls class="aspect-video">
-					<track kind="captions" />
-					<source src={`${MEDIAURL}/videos/${videoUrl}`} />
-					Your browser does not support the video tag.
-				</video>
+			<div class="group relative overflow-hidden rounded-lg bg-black" id="video-container">
+				<figure>
+					<!-- CONTROLS -->
+					<div
+						id="controls"
+						class="absolute bottom-0 left-0 w-full p-5 opacity-0 transition-opacity duration-300 ease-linear group-hover:opacity-100"
+					>
+						<!-- PROGRESS BAR -->
+						<div id="progress-bar" class="mb-4 h-1 w-full cursor-pointer bg-white">
+							<div
+								id="progress-indicator"
+								class="h-full w-9 bg-indigo-800 transition-all duration-500 ease-in-out"
+							></div>
+						</div>
+						<div class="flex items-center justify-between">
+							<div class="flex items-center justify-center gap-10">
+								<!-- REWIND BUTTON -->
+								<button id="rewind" class="transition-all duration-100 ease-linear hover:scale-125">
+									<i class="material-icons w-12 text-3xl text-white">replay_10 </i>
+								</button>
+
+								<!-- PLAY BUTTON -->
+								<button
+									id="play-pause"
+									class=" transition-all duration-100 ease-linear hover:scale-125"
+								>
+									<i class="material-icons inline-block text-center text-5xl text-white"
+										>play_arrow</i
+									>
+								</button>
+
+								<!-- FAST FORWARD BUTTON -->
+								<button
+									id="fast-forward"
+									class="transition-all duration-100 ease-linear hover:scale-125"
+								>
+									<i class="material-icons w-12 text-3xl text-white">forward_10 </i>
+								</button>
+								<!-- VOLUME BUTTON -->
+
+								<button id="volume" class="transition-all duration-100 ease-linear hover:scale-125">
+									<i class="material-icons text-3xl text-white">volume_up</i>
+								</button>
+								<input
+									class="my-auto flex cursor-pointer appearance-none items-center justify-center rounded-lg rounded-xl bg-gray-200"
+									type="range"
+									id="volumeSlider"
+									min="0"
+									max="1"
+									step="0.01"
+									value="1"
+								/>
+							</div>
+
+							<div>
+								<button
+									id="fullscreen"
+									class="transition-all duration-100 ease-linear hover:scale-125"
+								>
+									<i class="material-icons text-3xl text-white">fullscreen</i>
+								</button>
+							</div>
+						</div>
+					</div>
+
+					<video id="video-player" width="100%" class="aspect-video rounded-lg">
+						<track kind="captions" />
+						<source src={`${MEDIAURL}/videos/${videoUrl}`} />
+						Your browser does not support the video tag.
+					</video>
+				</figure>
 			</div>
 
 			<div class="mt-4 flex justify-end">
