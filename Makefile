@@ -8,7 +8,7 @@ SRCDIR = src
 BINDIR = bin
 
 # Main package - update with your entry point
-MAIN_PACKAGE = ./cmd/main.go
+MAIN_PACKAGE = ./cmd/offline/main.go
 
 # Output binary name
 BINARY_NAME = $(BINDIR)/$(executable_name)
