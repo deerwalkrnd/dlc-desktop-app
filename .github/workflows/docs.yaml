@@ -28,16 +28,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: yarn # Change to 'npm' if you use npm
+          cache: npm # Change to 'npm' if you use npm
 
       # Assuming your Docusaurus project is at the root or in a directory called 'docs'
       # Adjust the working-directory as needed
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: npm install --frozen-lockfile
         working-directory: ./docs # Change this to the directory where your docusaurus.config.js is located
 
       - name: Build documentation
-        run: yarn build
+        run: npm build
         working-directory: ./docs # Change this to match your project structure
 
       # Deploy to the 'documentation' branch
