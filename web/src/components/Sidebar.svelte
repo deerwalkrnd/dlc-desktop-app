@@ -5,6 +5,7 @@
 	function setActiveSubject(subjectName: string) {
 		activeSubject = subjectName;
 	}
+	console.log(subjects);
 </script>
 
 <aside class="h-full w-64 border-r border-blue-100 bg-white shadow-md">
@@ -22,7 +23,7 @@
 							subject.Name
 								? 'bg-blue-100 font-medium text-blue-700'
 								: 'text-blue-800'}"
-							href={`${subject.Name}-${subject.ClassId}`}
+							href={`${subject.Name}-${subject.ID}`}
 						>
 							<div
 								class="mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600"
