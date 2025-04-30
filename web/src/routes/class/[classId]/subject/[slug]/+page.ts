@@ -37,6 +37,7 @@ export const load = async ({ params }: { params: any }) => {
 
 	const lessons = await Promise.all(lessonPromises);
 	const subjectList = await fetchClassSubjects();
+	console.log(subjectList);
 
 	return {
 		subjectList,
