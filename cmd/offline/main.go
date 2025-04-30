@@ -44,7 +44,7 @@ func init() {
 	}
 }
 func main() {
-	outputPath := "./web/build"
+	outputPath := "./web"
 
 	mainRouter := mux.NewRouter()
 
