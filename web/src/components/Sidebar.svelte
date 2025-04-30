@@ -1,45 +1,43 @@
 <script lang="ts">
-	export let subjects: { name: string; icon?: string; count?: number }[] = [];
-	export let activeSubject: string | null = null;
-	export let onSelectSubject: (subject: string) => void = () => {};
+	let { subjects } = $props();
+	let activeSubject: string | null = $state(null);
+
+	function setActiveSubject(subjectName: string) {
+		activeSubject = subjectName;
+	}
 </script>
 
-<aside class="h-full w-64 border-r border-gray-200 bg-gray-100 shadow-sm">
-	<div class="border-b border-gray-200 p-4">
-		<h2 class="text-lg font-semibold text-gray-800">Subjects</h2>
+<aside class="h-full w-64 border-r border-blue-100 bg-white shadow-md">
+	<div class="border-b border-blue-100 bg-blue-50 p-4">
+		<h2 class="text-lg font-semibold text-blue-800">Subjects</h2>
 	</div>
 
-	<nav class="mt-2">
-		<ul>
-			{#each subjects as subject}
-				<li>
-					<button
-						class="flex w-full items-center px-4 py-3 text-left transition-colors hover:bg-gray-200 {activeSubject ===
-						subject.name
-							? 'bg-gray-200 font-medium'
-							: ''}"
-						on:click={() => onSelectSubject(subject.name)}
-					>
-						{#if subject.icon}
-							<span class="mr-3 text-gray-500">{subject.icon}</span>
-						{/if}
-						<span class="text-gray-700">{subject.name}</span>
-						{#if subject.count !== undefined}
-							<span
-								class="ml-auto rounded-full bg-gray-200 px-2 py-1 text-xs font-medium text-gray-600"
+	<nav class="py-2">
+		<ul class="space-y-1">
+			{#if subjects && subjects.subjects && subjects.subjects.length > 0}
+				{#each subjects.subjects as subject}
+					<li class="mx-2">
+						<a
+							class="flex w-full cursor-pointer items-center rounded-md px-4 py-3 text-left transition-all hover:bg-blue-50 hover:shadow-sm {activeSubject ===
+							subject.Name
+								? 'bg-blue-100 font-medium text-blue-700'
+								: 'text-blue-800'}"
+							href={`${subject.Name}-${subject.ClassId}`}
+						>
+							<div
+								class="mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600"
 							>
-								{subject.count}
-							</span>
-						{/if}
-					</button>
+								{subject.Name.charAt(0)}
+							</div>
+							<span>{subject.Name}</span>
+						</a>
+					</li>
+				{/each}
+			{:else}
+				<li class="px-6 py-4 text-center">
+					<div class="rounded-md bg-blue-50 p-3 text-sm text-blue-500">No subjects available</div>
 				</li>
-			{/each}
-
-			{#if subjects.length === 0}
-				<li class="px-4 py-3 text-sm text-gray-500 italic">No subjects available</li>
 			{/if}
 		</ul>
 	</nav>
-
-	<div class="mt-auto border-t border-gray-200 p-4"></div>
 </aside>

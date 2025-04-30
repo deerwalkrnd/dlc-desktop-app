@@ -1,6 +1,4 @@
 <script lang="ts">
-	import Figure from '../components/Figure.svelte';
-
 	let classes = [
 		{ name: 'Class 1', bgColor: 'bg-red-500', href: '1' },
 		{ name: 'Class 2', bgColor: 'bg-blue-500', href: '2' },
@@ -18,7 +16,7 @@
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-6 py-12 lg:px-8">
 	<div class="mx-auto max-w-7xl">
 		<div class="mb-12 text-center">
-			<h1 class="mb-4 text-4xl font-bold text-gray-900">Choose Your Class</h1>
+			<h1 class="mb-4 text-4xl font-bold text-blue-800">Choose Your Class</h1>
 		</div>
 
 		<div class="grid grid-cols-2 gap-6 lg:grid-cols-3 xl:grid-cols-5">
