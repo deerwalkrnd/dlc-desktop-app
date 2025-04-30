@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Dog404 from '$lib/assets/animation.webm';
 	import Cat404 from '$lib/assets/animation2.webm';
 </script>
 
