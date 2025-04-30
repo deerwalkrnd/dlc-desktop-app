@@ -2,11 +2,11 @@ name: Deploy Docusaurus to GitHub Pages
 
 on:
   push:
-    # branches:
+    branches:
       - main
     # Optionally, you can configure paths to only trigger the workflow when docs files change
-    # paths:
-    #   - 'docs/**'
+    paths:
+      - 'docs/**'
     #   - 'website/**'
     #   - 'docusaurus.config.js'
 
