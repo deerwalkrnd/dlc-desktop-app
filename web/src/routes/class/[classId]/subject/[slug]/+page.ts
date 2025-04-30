@@ -16,7 +16,7 @@ export const load = async ({ params }: { params: any }) => {
 			const currentClass = classList.classes.find((cls: any) => cls.Number == classId);
 
 			if (currentClass) {
-				const type = 'old';
+				const type = 'new';
 				const subjectsRes = await fetch(
 					`${APIURL}/classes/${currentClass.ID}/subjects?type=${type}`
 				);

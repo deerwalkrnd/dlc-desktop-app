@@ -4,7 +4,7 @@ export const load = async ({ params }: { params: any }) => {
 	const classNumber = parseInt(params.classId, 10);
 	const res = await fetch(`${APIURL}/classes`);
 	const data = await res.json();
-	let type = 'old';
+	let type = 'new';
 
 	let getClass = data.classes.find((singleClass: any) => singleClass.Number === classNumber);
 	if (getClass) {
