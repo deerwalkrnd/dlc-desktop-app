@@ -9,16 +9,18 @@ import (
 	"gorm.io/gorm"
 )
 
+var VideoPattern = regexp.MustCompile(".mp4$")
+
 func Initialize(dataPath string, db *gorm.DB) error {
 	videos := []*Video{}
-	videoPattern := regexp.MustCompile(".mp4$")
 
-	filepath.WalkDir(dataPath, func(path string, d fs.DirEntry, err error) error {
+	seedErr := filepath.WalkDir(dataPath, func(path string, d fs.DirEntry, err error) error {
+
 		if err != nil {
 			return err
 		}
 
-		if !d.IsDir() && videoPattern.MatchString(path) {
+		if !d.IsDir() && VideoPattern.MatchString(path) {
 			video := ParseVideo(path)
 			if video == nil {
 				log.Printf("failed to parse: %s\n", path)
@@ -29,6 +31,10 @@ func Initialize(dataPath string, db *gorm.DB) error {
 		}
 		return nil
 	})
+
+	if seedErr != nil {
+		return seedErr
+	}
 
 	err := SeedVideos(videos, db)
 

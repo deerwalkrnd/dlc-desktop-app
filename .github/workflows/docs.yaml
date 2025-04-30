@@ -1,0 +1,50 @@
+name: Deploy Docusaurus to GitHub Pages
+
+on:
+  push:
+    # branches:
+      - main
+    # Optionally, you can configure paths to only trigger the workflow when docs files change
+    # paths:
+    #   - 'docs/**'
+    #   - 'website/**'
+    #   - 'docusaurus.config.js'
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm # Change to 'npm' if you use npm
+
+      # Assuming your Docusaurus project is at the root or in a directory called 'docs'
+      # Adjust the working-directory as needed
+      - name: Install dependencies
+        run: npm install --frozen-lockfile
+        working-directory: ./docs # Change this to the directory where your docusaurus.config.js is located
+
+      - name: Build documentation
+        run: npm build
+        working-directory: ./docs # Change this to match your project structure
+
+      # Deploy to the 'documentation' branch
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: documentation # The branch the documentation will be deployed to
+          folder: ./docs/build # The folder that contains the built documentation
+          clean: true # Automatically remove deleted files from the deployment
+          commit-message: "docs: update documentation [skip ci]"

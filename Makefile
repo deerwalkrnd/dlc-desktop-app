@@ -9,11 +9,13 @@ BINDIR = bin
 
 # Main package - update with your entry point
 MAIN_PACKAGE = ./cmd/offline/main.go
+PARSER_PACKAGE = ./cmd/parser/main.go
 
 # Output binary name
 BINARY_NAME = $(BINDIR)/$(executable_name)
 DATABASE_NAME = "./dlc.sqlite"
 
+PARSER_BINARY_NAME = $(BINDIR)/parser.exe
 # Build flags for size optimization
 # -ldflags="-s -w": 
 #   -s: disable symbol table
@@ -56,3 +58,9 @@ release: clean setup
 .PHONY: remove_db
 remove_db:
 	rm ./dlc.sqlite
+
+.PHONY: parser
+parser:
+	$(GO) build $(GO_BUILD_FLAGS) -o $(PARSER_BINARY_NAME) $(PARSER_PACKAGE)
+
+	
