@@ -14,7 +14,8 @@ var VideoPattern = regexp.MustCompile(".mp4$")
 func Initialize(dataPath string, db *gorm.DB) error {
 	videos := []*Video{}
 
-	filepath.WalkDir(dataPath, func(path string, d fs.DirEntry, err error) error {
+	seedErr := filepath.WalkDir(dataPath, func(path string, d fs.DirEntry, err error) error {
+
 		if err != nil {
 			return err
 		}
@@ -30,6 +31,10 @@ func Initialize(dataPath string, db *gorm.DB) error {
 		}
 		return nil
 	})
+
+	if seedErr != nil {
+		return seedErr
+	}
 
 	err := SeedVideos(videos, db)
 
