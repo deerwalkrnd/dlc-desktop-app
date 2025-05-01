@@ -19,6 +19,7 @@ func main() {
 	var unparsed []string
 
 	err := filepath.WalkDir(userInput, func(path string, d fs.DirEntry, err error) error {
+
 		if err != nil {
 			return err
 		}
