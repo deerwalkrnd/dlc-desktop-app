@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Navbar from '$components/Navbar.svelte';
-	export const prerender = true;
 	import '../app.css';
 
 	let { children } = $props();

@@ -55,6 +55,7 @@ func main() {
 	mainRouter.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]bool{"ok": true})
 	})
+
 	videoDir := http.Dir("./" + DATA_FOLDER)
 	videoRouter := mainRouter.PathPrefix("/videos/").Subrouter()
 	videoRouter.PathPrefix("/").Handler(http.StripPrefix("/videos/", api.VideoHandler(videoDir))).Methods("GET", "OPTIONS")
