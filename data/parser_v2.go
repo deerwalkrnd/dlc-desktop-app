@@ -56,5 +56,4 @@ func ParseVideoV2(path string) *Video {
 
 	return video
 
-	return nil
 }
