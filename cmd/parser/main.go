@@ -25,7 +25,7 @@ func main() {
 		}
 
 		if !d.IsDir() && data.VideoPattern.MatchString(path) {
-			video := data.ParseVideo(path)
+			video := data.ParseVideoV2(path)
 			if video == nil {
 				log.Printf("failed to parse: %s\n", path)
 				unparsed = append(unparsed, path)

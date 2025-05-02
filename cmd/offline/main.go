@@ -46,6 +46,10 @@ func init() {
 func main() {
 	outputPath := "./web/build"
 
+	if os.Getenv("PRODUCTION") == "TRUE" {
+		outputPath = "./web"
+	}
+
 	mainRouter := mux.NewRouter()
 
 	mainRouter.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
