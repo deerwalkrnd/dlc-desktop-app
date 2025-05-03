@@ -18,6 +18,8 @@ var Logger = log.Default()
 
 const DATA_FOLDER string = "DLC"
 
+const PRODUCTION = true
+
 func init() {
 	Logger.Println("Started DLC Desktop Application")
 
@@ -44,9 +46,10 @@ func init() {
 	}
 }
 func main() {
+
 	outputPath := "./web/build"
 
-	if os.Getenv("PRODUCTION") == "TRUE" {
+	if PRODUCTION {
 		outputPath = "./web"
 	}
 
