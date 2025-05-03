@@ -79,7 +79,7 @@
 {#snippet VideoDialog(lessonName: string, videoUrl: string, closeClick: () => void)}
 	<dialog
 		id="confirmation-dialog"
-		class="fixed inset-0 m-auto w-full max-w-5xl rounded-lg bg-blue-500 p-6 shadow-2xl"
+		class="fixed inset-0 m-auto w-full max-w-5xl rounded-lg bg-blue-300 p-6 shadow-2xl"
 	>
 		<div class="flex flex-col">
 			<div class="mb-4 flex items-center justify-between">

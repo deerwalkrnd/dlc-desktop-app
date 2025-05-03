@@ -2,9 +2,10 @@ import { APIURL } from '$lib/constant';
 
 export const load = async ({ params }: { params: any }) => {
 	const classId = params.classId;
-	const subjectSlug = params.slug.toLowerCase();
+	const subjectSlug = params.slug;
 	const subjectParts = subjectSlug.split('-');
 	const subjectId = subjectParts[1];
+	const subjectName = subjectParts[0];
 
 	const lectureRes = await fetch(`${APIURL}/subjects/${subjectId}/lectures`);
 	const lecturesData = await lectureRes.json();
@@ -37,9 +38,8 @@ export const load = async ({ params }: { params: any }) => {
 
 	const lessons = await Promise.all(lessonPromises);
 	const subjectList = await fetchClassSubjects();
-	console.log(subjectList);
-
 	return {
+		subjectName,
 		subjectList,
 		subjectData: lecturesData,
 		lessons

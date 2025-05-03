@@ -5,7 +5,6 @@
 	function setActiveSubject(subjectName: string) {
 		activeSubject = subjectName;
 	}
-	console.log(subjects);
 </script>
 
 <aside class="h-full w-64 border-r border-blue-100 bg-white shadow-md">
