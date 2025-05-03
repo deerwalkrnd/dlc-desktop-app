@@ -13,7 +13,7 @@ We will begin things by assuming a few things about your system.
 
 ## Getting Started
 
-Get started by **Downloading the DLC Destop App** from **[release](https://github.com/deerwalkrnd/dlc-desktop-app/releases/tag/1.0)**.
+Get started by **Downloading the DLC Destop App** from **[release](https://github.com/deerwalkrnd/dlc-desktop-app/releases)**.
 
 ### Verifying
 
