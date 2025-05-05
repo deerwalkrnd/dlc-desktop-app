@@ -25,6 +25,7 @@ func main() {
 		}
 
 		if !d.IsDir() && data.VideoPattern.MatchString(path) {
+			// fmt.Println(path)
 			video := data.ParseVideoV2(path)
 			if video == nil {
 				log.Printf("failed to parse: %s\n", path)
@@ -47,13 +48,13 @@ func main() {
 		fmt.Println(video.VideoURL)
 	}
 
-	fmt.Println("Count: ", len(videos))
+	fmt.Println("Parsed Count: ", len(videos))
 	if len(unparsed) > 0 {
 		fmt.Println("Failed to Parse: ")
 		for _, video := range unparsed {
-			fmt.Println(video)
+			fmt.Println(filepath.Base(video))
 		}
-		fmt.Println("Count: ", len(unparsed))
+		fmt.Println("Failed Count: ", len(unparsed))
 	}
 
 }

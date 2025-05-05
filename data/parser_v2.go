@@ -12,8 +12,21 @@ import (
 
 func ParseVideoV2(path string) *Video {
 	basePath := filepath.Base(path)
+
+	if len(basePath) <= 1 {
+		log.Println("error parsing videos!")
+		return nil
+	}
+
 	videoPath := basePath[0 : len(basePath)-4]
+
+	// fmt.Println("Video path is: ", videoPath)
 	items := strings.Split(videoPath, "-")
+
+	if len(items) < 7 {
+		log.Println("error parsing videos!")
+		return nil
+	}
 
 	lessionNumber, err := strconv.ParseFloat(strings.TrimSpace(items[1]), 64)
 	if err != nil {
