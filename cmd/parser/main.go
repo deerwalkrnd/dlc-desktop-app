@@ -48,13 +48,13 @@ func main() {
 		fmt.Println(video.VideoURL)
 	}
 
-	fmt.Println("Parsed Count: ", len(videos))
 	if len(unparsed) > 0 {
 		fmt.Println("Failed to Parse: ")
 		for _, video := range unparsed {
 			fmt.Println(filepath.Base(video))
 		}
-		fmt.Println("Failed Count: ", len(unparsed))
 	}
+	fmt.Println("Parsed Count: ", len(videos))
+	fmt.Println("Failed Count: ", len(unparsed))
 
 }

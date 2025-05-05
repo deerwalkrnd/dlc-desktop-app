@@ -16,9 +16,9 @@ import (
 
 var Logger = log.Default()
 
-const DATA_FOLDER string = "DLC"
+const DATA_FOLDER string = "D:\\DLC_VIDEOS"
 
-const PRODUCTION = true
+const PRODUCTION = false
 
 func init() {
 	Logger.Println("Started DLC Desktop Application")
@@ -59,7 +59,7 @@ func main() {
 		json.NewEncoder(w).Encode(map[string]bool{"ok": true})
 	})
 
-	videoDir := http.Dir("./" + DATA_FOLDER)
+	videoDir := http.Dir(DATA_FOLDER)
 	videoRouter := mainRouter.PathPrefix("/videos/").Subrouter()
 	videoRouter.PathPrefix("/").Handler(http.StripPrefix("/videos/", api.VideoHandler(videoDir))).Methods("GET", "OPTIONS")
 
