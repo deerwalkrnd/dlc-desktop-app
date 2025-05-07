@@ -30,6 +30,7 @@ func init() {
 		if err != nil {
 			Logger.Fatalf("error getting database, %s\n", err.Error())
 		}
+		Logger.Println("Database Migration Started")
 
 		db.MigrateModels(DB)
 
