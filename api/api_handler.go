@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/deerwalkrnd/dlc-desktop-app/db"
 	"github.com/gorilla/mux"
@@ -157,7 +158,8 @@ func (a *ApiHandler) GetLecturesBySubject(w http.ResponseWriter, r *http.Request
 
 	var lectures []db.Lecture
 
-	query := a.db.Where("subject_id = ?", subjectId)
+	// Preload the lessons for each lecture, but also preload the Teacher for each lesson
+	query := a.db.Where("subject_id = ?", subjectId).Preload("Lessions.Teacher")
 
 	result := query.Find(&lectures)
 
@@ -172,15 +174,74 @@ func (a *ApiHandler) GetLecturesBySubject(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// Create a custom response structure to avoid circular references
+	type SimplifiedLesson struct {
+		ID        uint      `json:"id"`
+		CreatedAt time.Time `json:"createdAt"`
+		UpdatedAt time.Time `json:"updatedAt"`
+		Name      string    `json:"name"`
+		Number    float64   `json:"number"`
+		VideoUrl  string    `json:"videoUrl"`
+		TeacherID uint      `json:"teacherId"`
+		LectureID uint      `json:"lectureId"`
+		Teacher   struct {
+			ID   uint   `json:"id"`
+			Name string `json:"name"`
+		} `json:"teacher,omitempty"`
+	}
+
+	type SimplifiedLecture struct {
+		ID        uint               `json:"id"`
+		CreatedAt time.Time          `json:"createdAt"`
+		UpdatedAt time.Time          `json:"updatedAt"`
+		Number    uint               `json:"number"`
+		Name      string             `json:"name"`
+		SubjectID uint               `json:"subjectId"`
+		Lessons   []SimplifiedLesson `json:"lessons,omitempty"`
+	}
+
+	// Map the lectures to the simplified structure
+	simplifiedLectures := make([]SimplifiedLecture, len(lectures))
+	for i, lecture := range lectures {
+		simplifiedLectures[i] = SimplifiedLecture{
+			ID:        lecture.ID,
+			CreatedAt: lecture.CreatedAt,
+			UpdatedAt: lecture.UpdatedAt,
+			Number:    lecture.Number,
+			Name:      lecture.Name,
+			SubjectID: lecture.SubjectId,
+			Lessons:   make([]SimplifiedLesson, len(lecture.Lessions)),
+		}
+
+		// Map the lessons to the simplified structure
+		for j, lesson := range lecture.Lessions {
+			simplifiedLectures[i].Lessons[j] = SimplifiedLesson{
+				ID:        lesson.ID,
+				CreatedAt: lesson.CreatedAt,
+				UpdatedAt: lesson.UpdatedAt,
+				Name:      lesson.Name,
+				Number:    lesson.Number,
+				VideoUrl:  lesson.VideoUrl,
+				TeacherID: lesson.TeacherId,
+				LectureID: lesson.LectureId,
+			}
+
+			// Add teacher info if available
+			if lesson.Teacher.ID != 0 {
+				simplifiedLectures[i].Lessons[j].Teacher.ID = lesson.Teacher.ID
+				simplifiedLectures[i].Lessons[j].Teacher.Name = lesson.Teacher.Name
+			}
+		}
+	}
+
 	respondWithJSON(
 		w,
 		http.StatusOK,
 		map[string]interface{}{
-			"lectures": lectures,
-			"count":    len(lectures),
+			"lectures": simplifiedLectures,
+			"count":    len(simplifiedLectures),
 		},
 	)
-
 }
 
 func (a *ApiHandler) GetLessonsByLecture(w http.ResponseWriter, r *http.Request) {

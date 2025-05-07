@@ -78,7 +78,7 @@ func getTeacher(teacherName string, DB *gorm.DB) *db.Teacher {
 func getSubject(classId uint, subjectType db.SubjectType, subjectName string, DB *gorm.DB) *db.Subject {
 
 	var subject db.Subject
-	result := DB.Where("name = ? AND type = ?", subjectName, subjectType).First(&subject)
+	result := DB.Where("name = ? AND type = ? AND class_id = ?", subjectName, subjectType, classId).First(&subject)
 
 	if result.Error == gorm.ErrRecordNotFound {
 
