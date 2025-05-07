@@ -4,7 +4,8 @@
 	import CloseButton from './CloseButton.svelte';
 	import { MEDIAURL } from '$lib/constant';
 
-	let { lectures, lessons } = $props();
+	let { lectures } = $props();
+	console.log(lectures);
 	let dialog: any;
 	let videoElement: HTMLVideoElement | null;
 
@@ -40,7 +41,7 @@
 	};
 </script>
 
-{#snippet Lecture(lectureId: number, lectureName: string, lectureNumber: number)}
+{#snippet Lecture(lectureId: number, lectureName: string, lectureNumber: number, lessons: any)}
 	<div
 		class="flex flex-col rounded-lg bg-white p-6 shadow-md transition-shadow duration-300 hover:shadow-lg"
 	>
@@ -48,14 +49,12 @@
 			Lecture {lectureNumber}: {lectureName}
 		</h1>
 		<div class="ml-4 mt-2 space-y-3">
-			{#each lessons as lessonGroup}
-				{#each lessonGroup as lesson}
-					{#if lesson.ID == lectureId}
-						<div>
-							{@render Lesson(lesson.ID, lesson.Name, lesson.Number, lesson.VideoUrl)}
-						</div>
-					{/if}
-				{/each}
+			{#each lessons as lesson}
+				{#if lesson.lectureId == lectureId}
+					<div>
+						{@render Lesson(lesson.id, lesson.name, lesson.number, lesson.videoUrl)}
+					</div>
+				{/if}
 			{/each}
 		</div>
 	</div>
@@ -174,6 +173,6 @@
 
 <div class="flex min-h-screen flex-col gap-6 bg-gray-50 p-8">
 	{#each lectures as lecture}
-		{@render Lecture(lecture.ID, lecture.Name, lecture.Number)}
+		{@render Lecture(lecture.id, lecture.name, lecture.number, lecture.lessons)}
 	{/each}
 </div>

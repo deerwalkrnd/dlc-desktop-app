@@ -11,6 +11,6 @@
 		<h1 class="mb-2 p-10 text-center text-3xl font-bold text-blue-800">
 			{data.subjectName.charAt(0).toUpperCase() + data.subjectName.slice(1)}
 		</h1>
-		<LectureCard lectures={data.subjectData.lectures} lessons={data.lessons} />
+		<LectureCard lectures={data.subjectData.lectures} />
 	</div>
 </div>

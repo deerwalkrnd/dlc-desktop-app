@@ -10,6 +10,7 @@ export const load = async ({ params }: { params: any }) => {
 	if (getClass) {
 		const subjects = await fetch(`${APIURL}/classes/${getClass.ID}/subjects?/type=${type}`);
 		const data = await subjects.json();
+		console.log(data);
 		return {
 			subjects: data,
 			getClass
