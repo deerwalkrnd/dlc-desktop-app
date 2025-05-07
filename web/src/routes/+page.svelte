@@ -13,6 +13,9 @@
 	];
 </script>
 
+<svelte:head>
+	<title>{'Deerwalk Learning Center'}</title>
+</svelte:head>
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-6 py-12 lg:px-8">
 	<div class="mx-auto max-w-7xl">
 		<div class="mb-12 text-center">

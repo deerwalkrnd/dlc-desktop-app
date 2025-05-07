@@ -5,6 +5,10 @@
 	let { data }: PageProps = $props();
 </script>
 
+<svelte:head>
+	<title>{data.subjectName}</title>
+</svelte:head>
+
 <div class="flex flex-row">
 	<Sidebar subjects={data.subjectList} />
 	<div class="flex flex-1 flex-col">

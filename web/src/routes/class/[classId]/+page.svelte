@@ -7,6 +7,9 @@
 	let { data }: PageProps = $props();
 </script>
 
+<svelte:head>
+	<title>Deerwalk Learning Center - Grade : {data.getClass.Number}</title>
+</svelte:head>
 <div class="flex min-h-screen flex-col bg-slate-50">
 	<Header classNumber={data.getClass.Number} />
 
