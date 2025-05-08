@@ -31,9 +31,7 @@ export const load = async ({ params }: { params: any }) => {
 	}
 
 	const subjectList = await fetchClassSubjects();
-	// lecturesData.lectures.sort(function (a: any, b: any) {
-	// 	return a.number - b.number;
-	// });
+
 	return {
 		subjectName,
 		subjectList,
