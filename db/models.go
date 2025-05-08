@@ -30,7 +30,7 @@ type Lecture struct {
 	Name      string
 	SubjectId uint
 	Subject   Subject  `gorm:"foreignKey:SubjectId"`
-	Lessions  []Lesson `gorm:"foreignKey:LectureId"`
+	Lessons   []Lesson `gorm:"foreignKey:LectureId"`
 }
 
 type Lesson struct {

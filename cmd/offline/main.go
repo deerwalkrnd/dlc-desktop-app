@@ -16,7 +16,7 @@ import (
 
 var Logger = log.Default()
 
-const DATA_FOLDER string = "./DLC"
+const DATA_FOLDER string = "D:\\TEST\\DLC"
 
 const PRODUCTION = false
 
