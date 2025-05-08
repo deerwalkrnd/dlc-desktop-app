@@ -5,6 +5,7 @@
 	import { MEDIAURL } from '$lib/constant';
 
 	let { lectures } = $props();
+
 	let dialog: HTMLDialogElement | null = null;
 	let videoElement: HTMLVideoElement | null = null;
 	let currentVideoUrl = '';
@@ -61,7 +62,7 @@
 		class="flex flex-col rounded-lg bg-white p-6 shadow-md transition-shadow duration-300 hover:shadow-lg"
 	>
 		<h1 class="mb-4 border-b pb-2 text-2xl font-bold text-indigo-700">
-			Lecture {lectureNumber}: {lectureName}
+			Chapter {lectureNumber}: {lectureName}
 		</h1>
 		<div class="ml-4 mt-2 space-y-3">
 			{#each lessons as lesson}
