@@ -158,10 +158,12 @@ func (a *ApiHandler) GetLecturesBySubject(w http.ResponseWriter, r *http.Request
 
 	var lectures []db.Lecture
 
-	// Preload the lessons for each lecture, but also preload the Teacher for each lesson
-	query := a.db.Where("subject_id = ?", subjectId).Preload("Lessions.Teacher")
-
-	result := query.Find(&lectures)
+	query := a.db.Where("subject_id = ?", subjectId)
+	query = query.Preload("Lessons.Teacher")
+	query = query.Preload("Lessons", func(db *gorm.DB) *gorm.DB {
+		return db.Order("number asc")
+	})
+	result := query.Order("number asc").Find(&lectures)
 
 	if result.Error != nil {
 		respondWithJSON(
@@ -210,11 +212,11 @@ func (a *ApiHandler) GetLecturesBySubject(w http.ResponseWriter, r *http.Request
 			Number:    lecture.Number,
 			Name:      lecture.Name,
 			SubjectID: lecture.SubjectId,
-			Lessons:   make([]SimplifiedLesson, len(lecture.Lessions)),
+			Lessons:   make([]SimplifiedLesson, len(lecture.Lessons)),
 		}
 
 		// Map the lessons to the simplified structure
-		for j, lesson := range lecture.Lessions {
+		for j, lesson := range lecture.Lessons {
 			simplifiedLectures[i].Lessons[j] = SimplifiedLesson{
 				ID:        lesson.ID,
 				CreatedAt: lesson.CreatedAt,
