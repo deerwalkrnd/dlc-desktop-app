@@ -10,6 +10,31 @@ import (
 	"gorm.io/gorm"
 )
 
+type SimplifiedLesson struct {
+	ID        uint      `json:"id"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	Name      string    `json:"name"`
+	Number    float64   `json:"number"`
+	VideoUrl  string    `json:"videoUrl"`
+	TeacherID uint      `json:"teacherId"`
+	LectureID uint      `json:"lectureId"`
+	Teacher   struct {
+		ID   uint   `json:"id"`
+		Name string `json:"name"`
+	} `json:"teacher,omitempty"`
+}
+
+type SimplifiedLecture struct {
+	ID        uint               `json:"id"`
+	CreatedAt time.Time          `json:"createdAt"`
+	UpdatedAt time.Time          `json:"updatedAt"`
+	Number    uint               `json:"number"`
+	Name      string             `json:"name"`
+	SubjectID uint               `json:"subjectId"`
+	Lessons   []SimplifiedLesson `json:"lessons,omitempty"`
+}
+
 type ApiHandler struct {
 	db *gorm.DB
 }
@@ -48,7 +73,7 @@ func (a *ApiHandler) GetTeachers(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(
 		w,
 		http.StatusOK,
-		map[string]interface{}{
+		map[string]any{
 			"teachers": teachers,
 			"count":    len(teachers),
 		},
@@ -75,7 +100,7 @@ func (a *ApiHandler) GetClasses(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(
 		w,
 		http.StatusOK,
-		map[string]interface{}{
+		map[string]any{
 			"classes": classes,
 			"count":   len(classes),
 		},
@@ -160,9 +185,11 @@ func (a *ApiHandler) GetLecturesBySubject(w http.ResponseWriter, r *http.Request
 
 	query := a.db.Where("subject_id = ?", subjectId)
 	query = query.Preload("Lessons.Teacher")
+
 	query = query.Preload("Lessons", func(db *gorm.DB) *gorm.DB {
 		return db.Order("number asc")
 	})
+
 	result := query.Order("number asc").Find(&lectures)
 
 	if result.Error != nil {
@@ -176,33 +203,6 @@ func (a *ApiHandler) GetLecturesBySubject(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// Create a custom response structure to avoid circular references
-	type SimplifiedLesson struct {
-		ID        uint      `json:"id"`
-		CreatedAt time.Time `json:"createdAt"`
-		UpdatedAt time.Time `json:"updatedAt"`
-		Name      string    `json:"name"`
-		Number    float64   `json:"number"`
-		VideoUrl  string    `json:"videoUrl"`
-		TeacherID uint      `json:"teacherId"`
-		LectureID uint      `json:"lectureId"`
-		Teacher   struct {
-			ID   uint   `json:"id"`
-			Name string `json:"name"`
-		} `json:"teacher,omitempty"`
-	}
-
-	type SimplifiedLecture struct {
-		ID        uint               `json:"id"`
-		CreatedAt time.Time          `json:"createdAt"`
-		UpdatedAt time.Time          `json:"updatedAt"`
-		Number    uint               `json:"number"`
-		Name      string             `json:"name"`
-		SubjectID uint               `json:"subjectId"`
-		Lessons   []SimplifiedLesson `json:"lessons,omitempty"`
-	}
-
-	// Map the lectures to the simplified structure
 	simplifiedLectures := make([]SimplifiedLecture, len(lectures))
 	for i, lecture := range lectures {
 		simplifiedLectures[i] = SimplifiedLecture{
@@ -215,7 +215,6 @@ func (a *ApiHandler) GetLecturesBySubject(w http.ResponseWriter, r *http.Request
 			Lessons:   make([]SimplifiedLesson, len(lecture.Lessons)),
 		}
 
-		// Map the lessons to the simplified structure
 		for j, lesson := range lecture.Lessons {
 			simplifiedLectures[i].Lessons[j] = SimplifiedLesson{
 				ID:        lesson.ID,
@@ -228,7 +227,6 @@ func (a *ApiHandler) GetLecturesBySubject(w http.ResponseWriter, r *http.Request
 				LectureID: lesson.LectureId,
 			}
 
-			// Add teacher info if available
 			if lesson.Teacher.ID != 0 {
 				simplifiedLectures[i].Lessons[j].Teacher.ID = lesson.Teacher.ID
 				simplifiedLectures[i].Lessons[j].Teacher.Name = lesson.Teacher.Name
@@ -239,7 +237,7 @@ func (a *ApiHandler) GetLecturesBySubject(w http.ResponseWriter, r *http.Request
 	respondWithJSON(
 		w,
 		http.StatusOK,
-		map[string]interface{}{
+		map[string]any{
 			"lectures": simplifiedLectures,
 			"count":    len(simplifiedLectures),
 		},
@@ -282,7 +280,7 @@ func (a *ApiHandler) GetLessonsByLecture(w http.ResponseWriter, r *http.Request)
 	respondWithJSON(
 		w,
 		http.StatusOK,
-		map[string]interface{}{
+		map[string]any{
 			"lessons": lessons,
 			"count":   len(lessons),
 		},

@@ -62,7 +62,9 @@ func main() {
 
 	videoDir := http.Dir(DATA_FOLDER)
 	videoRouter := mainRouter.PathPrefix("/videos/").Subrouter()
-	videoRouter.PathPrefix("/").Handler(http.StripPrefix("/videos/", api.VideoHandler(videoDir))).Methods("GET", "OPTIONS")
+	videoRouter.PathPrefix("/").
+		Handler(http.StripPrefix("/videos/", api.VideoHandler(videoDir))).
+		Methods("GET", "OPTIONS")
 
 	spaHandler := api.SpaHandler{
 		StaticPath: outputPath,
