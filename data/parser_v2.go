@@ -41,8 +41,8 @@ func ParseVideoV2(path string) *Video {
 	}
 
 	teacherName := strings.TrimSpace(items[0])
-	lessionTitle := strings.TrimSpace(items[2])
-	lectureTitle := strings.TrimSpace(items[3])
+	lectureTitle := strings.TrimSpace(items[2])
+	lessionTitle := strings.TrimSpace(items[3])
 	subjectName := strings.TrimSpace(items[4])
 	subjectTypeParsed := strings.TrimSpace(items[5])
 	var subjectType db.SubjectType

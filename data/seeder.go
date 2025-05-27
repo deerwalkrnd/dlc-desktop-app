@@ -117,7 +117,7 @@ func getLesson(lessionName string, lessionNumber float64, videoUrl string, teach
 	result := DB.Where("name = ? AND number = ? AND lecture_id = ? AND teacher_id = ?", lessionName, lessionNumber, lectureId, teacherId).First(&lesson)
 
 	if result.Error == gorm.ErrRecordNotFound {
-		lesson := db.Lesson{
+		lesson = db.Lesson{
 			Name:      lessionName,
 			Number:    lessionNumber,
 			VideoUrl:  videoUrl,
