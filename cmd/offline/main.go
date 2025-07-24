@@ -18,7 +18,7 @@ var Logger = log.Default()
 
 const DATA_FOLDER string = "DLC"
 
-const PRODUCTION = true
+const PRODUCTION = false
 
 func init() {
 	Logger.Println("Started DLC Desktop Application")

@@ -15,28 +15,32 @@ type Video struct {
 	SubjectName string
 	SubjectType db.SubjectType
 
-	LectureNumber uint
-	LectureName   string
+	UnitNumber uint
+	UnitName   string
 
-	LessonNumber float64
-	LessionName  string
+	ChapterNumber uint
+
+	ChapterName      string
+	FullLessonNumber float64
 
 	VideoURL string
 }
 
 func NewVideo(
-	TeacherName, LessonName, LectureName, SubjectName string,
-	LessionNumber float64, LectureNumber, Class uint,
+	TeacherName, ChapterName, UnitName, SubjectName string,
+	ChapterNumber uint, UnitNumber, Class uint, FullLessonNumber float64,
 	SubjectType db.SubjectType, VideoURL string) *Video {
+
 	return &Video{
-		TeacherName:   TeacherName,
-		LessonNumber:  LessionNumber,
-		LessionName:   LectureName,
-		LectureNumber: LectureNumber,
-		LectureName:   LectureName,
-		SubjectName:   SubjectName,
-		SubjectType:   SubjectType,
-		VideoURL:      VideoURL,
-		Class:         Class,
+		TeacherName:      TeacherName,
+		UnitNumber:       UnitNumber,
+		UnitName:         UnitName,
+		ChapterNumber:    ChapterNumber,
+		ChapterName:      ChapterName,
+		FullLessonNumber: FullLessonNumber,
+		SubjectName:      SubjectName,
+		SubjectType:      SubjectType,
+		VideoURL:         VideoURL,
+		Class:            Class,
 	}
 }

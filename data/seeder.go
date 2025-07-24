@@ -1,130 +1,143 @@
 package data
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/deerwalkrnd/dlc-desktop-app/db"
 	"gorm.io/gorm"
 )
 
+// SeedVideos seeds all videos inside a single transaction.
+// If you want each video to be independent, move the transaction inside the loop.
 func SeedVideos(videos []*Video, DB *gorm.DB) error {
-
-	for _, video := range videos {
-		if err := seedVideo(video, DB); err != nil {
-			return err
+	return DB.Transaction(func(tx *gorm.DB) error {
+		for i, video := range videos {
+			if err := seedVideo(tx, video); err != nil {
+				return fmt.Errorf("seed video[%d]: %w", i, err)
+			}
 		}
-	}
-
-	return nil
+		return nil
+	})
 }
 
-func seedVideo(video *Video, db *gorm.DB) error {
+func seedVideo(tx *gorm.DB, v *Video) error {
+	class, err := getOrCreateClass(tx, v.Class)
+	if err != nil {
+		return err
+	}
 
-	class := getClass(video.Class, db)
-	teacher := getTeacher(video.TeacherName, db)
-	subject := getSubject(class.ID, video.SubjectType, video.SubjectName, db)
+	teacher, err := getOrCreateTeacher(tx, v.TeacherName)
+	if err != nil {
+		return err
+	}
 
-	lecture := getLecture(
-		video.LectureNumber,
-		video.LectureName,
-		subject.ID,
-		db,
-	)
-	lesson := getLesson(
-		video.LessionName,
-		video.LessonNumber,
-		video.VideoURL,
+	subject, err := getOrCreateSubject(tx, class.ID, v.SubjectType, v.SubjectName)
+	if err != nil {
+		return err
+	}
+
+	unit, err := getOrCreateUnit(tx, subject.ID, v.UnitNumber, v.UnitName)
+	if err != nil {
+		return err
+	}
+
+	_, err = getOrCreateChapter(
+		tx,
+		unit.ID,
 		teacher.ID,
-		lecture.ID,
-		db,
+		v.ChapterNumber,
+		v.ChapterName,
+		v.VideoURL,
 	)
-
-	if lesson == nil || lecture == nil || subject == nil || teacher == nil || class == nil {
-		return errors.New("could not seed the video, some fields are detected")
+	if err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func getClass(classNumber uint, DB *gorm.DB) *db.Class {
+// ---------- helpers ----------
 
-	var class db.Class
-	result := DB.Where("number = ?", classNumber).First(&class)
-
-	if result.Error == gorm.ErrRecordNotFound {
-		class = db.Class{Number: classNumber}
-		DB.Create(&class)
-
+func getOrCreateClass(tx *gorm.DB, number uint) (*db.Class, error) {
+	cl := db.Class{Number: number}
+	if err := tx.Where("number = ?", number).FirstOrCreate(&cl).Error; err != nil {
+		return nil, err
 	}
-
-	return &class
+	return &cl, nil
 }
 
-func getTeacher(teacherName string, DB *gorm.DB) *db.Teacher {
-
-	var teacher db.Teacher
-	result := DB.Where("name = ?", teacherName).First(&teacher)
-
-	if result.Error == gorm.ErrRecordNotFound {
-
-		teacher = db.Teacher{Name: teacherName}
-		DB.Create(&teacher)
-
+func getOrCreateTeacher(tx *gorm.DB, name string) (*db.Teacher, error) {
+	t := db.Teacher{Name: name}
+	if err := tx.Where("name = ?", name).FirstOrCreate(&t).Error; err != nil {
+		return nil, err
 	}
-
-	return &teacher
+	return &t, nil
 }
 
-func getSubject(classId uint, subjectType db.SubjectType, subjectName string, DB *gorm.DB) *db.Subject {
+func getOrCreateSubject(tx *gorm.DB, classID uint, subjectType db.SubjectType, name string) (*db.Subject, error) {
+	s := db.Subject{}
+	if err := tx.
+		Where("name = ? AND type = ? AND class_id = ?", name, subjectType, classID).
+		First(&s).Error; err != nil {
 
-	var subject db.Subject
-	result := DB.Where("name = ? AND type = ? AND class_id = ?", subjectName, subjectType, classId).First(&subject)
-
-	if result.Error == gorm.ErrRecordNotFound {
-
-		subject = db.Subject{
-			Name:    subjectName,
-			Type:    subjectType,
-			ClassId: classId,
+		if err == gorm.ErrRecordNotFound {
+			s = db.Subject{
+				Name:    name,
+				Type:    subjectType,
+				ClassId: classID,
+			}
+			if err := tx.Create(&s).Error; err != nil {
+				return nil, err
+			}
+		} else {
+			return nil, err
 		}
-
-		DB.Create(&subject)
-
 	}
-
-	return &subject
+	return &s, nil
 }
 
-func getLecture(lectureNumber uint, lectureName string, subjectId uint, DB *gorm.DB) *db.Lecture {
-	var lecture db.Lecture
-	result := DB.Where("number = ? AND name = ? AND subject_id = ?", lectureNumber, lectureName, subjectId).First(&lecture)
+func getOrCreateUnit(tx *gorm.DB, subjectID, number uint, name string) (*db.Unit, error) {
+	u := db.Unit{}
+	if err := tx.
+		Where("number = ? AND name = ? AND subject_id = ?", number, name, subjectID).
+		First(&u).Error; err != nil {
 
-	if result.Error == gorm.ErrRecordNotFound {
-		lecture = db.Lecture{
-			Number:    lectureNumber,
-			Name:      lectureName,
-			SubjectId: subjectId,
+		if err == gorm.ErrRecordNotFound {
+			u = db.Unit{
+				Number:    number,
+				Name:      name,
+				SubjectId: subjectID,
+			}
+			if err := tx.Create(&u).Error; err != nil {
+				return nil, err
+			}
+		} else {
+			return nil, err
 		}
-		DB.Create(&lecture)
-
 	}
-
-	return &lecture
+	return &u, nil
 }
 
-func getLesson(lessionName string, lessionNumber float64, videoUrl string, teacherId uint, lectureId uint, DB *gorm.DB) *db.Lesson {
-	var lesson db.Lesson
-	result := DB.Where("name = ? AND number = ? AND lecture_id = ? AND teacher_id = ?", lessionName, lessionNumber, lectureId, teacherId).First(&lesson)
+func getOrCreateChapter(tx *gorm.DB, unitID, teacherID, number uint, name, videoURL string) (*db.Chapter, error) {
+	c := db.Chapter{}
+	if err := tx.
+		Where("number = ? AND name = ? AND unit_id = ? AND teacher_id = ?", number, name, unitID, teacherID).
+		First(&c).Error; err != nil {
 
-	if result.Error == gorm.ErrRecordNotFound {
-		lesson = db.Lesson{
-			Name:      lessionName,
-			Number:    lessionNumber,
-			VideoUrl:  videoUrl,
-			TeacherId: teacherId,
-			LectureId: lectureId,
+		if err == gorm.ErrRecordNotFound {
+			c = db.Chapter{
+				Name:      name,
+				Number:    number,
+				VideoUrl:  videoURL,
+				TeacherId: teacherID,
+				UnitId:    unitID,
+			}
+			if err := tx.Create(&c).Error; err != nil {
+				return nil, err
+			}
+		} else {
+			return nil, err
 		}
-		DB.Create(&lesson)
 	}
-	return &lesson
+	return &c, nil
 }

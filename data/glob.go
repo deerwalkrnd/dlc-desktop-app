@@ -21,7 +21,7 @@ func Initialize(dataPath string, db *gorm.DB) error {
 		}
 
 		if !d.IsDir() && VideoPattern.MatchString(path) {
-			video := ParseVideoV2(path)
+			video := ParseVideoV3(path)
 			if video == nil {
 				log.Printf("failed to parse: %s\n", path)
 				log.Printf("skipping!")

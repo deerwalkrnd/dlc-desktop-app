@@ -1,66 +1,64 @@
-
 # Go compiler
-executable_name = "dlc-desktop-app.exe"
 GO = go
+EXECUTABLE_NAME = dlc-desktop-app.exe
+PARSER_EXECUTABLE = parser.exe
 
 # Directories
 SRCDIR = src
 BINDIR = bin
 
-# Main package - update with your entry point
+# Packages
 MAIN_PACKAGE = ./cmd/offline/main.go
 PARSER_PACKAGE = ./cmd/parser/main.go
 
-# Output binary name
-BINARY_NAME = $(BINDIR)/$(executable_name)
-DATABASE_NAME = "./dlc.sqlite"
+# Output paths
+BINARY_NAME = $(BINDIR)/$(EXECUTABLE_NAME)
+PARSER_BINARY_NAME = $(BINDIR)/$(PARSER_EXECUTABLE)
+DATABASE_NAME = ./dlc.sqlite
 
-PARSER_BINARY_NAME = $(BINDIR)/parser.exe
 # Build flags for size optimization
-# -ldflags="-s -w": 
-#   -s: disable symbol table
-#   -w: disable DWARF generation
-# -trimpath: remove file system paths from binary
 GO_BUILD_FLAGS = -ldflags="-s -w" -trimpath
 
-.PHONY: all
-all: clean setup build 
+.PHONY: all setup build clean gui nocgo release remove_db parser
 
-.PHONY: setup
+# Default target
+all: clean setup build
+
+# Ensure bin directory exists
 setup:
-	@if not exist $(BINDIR) mkdir $(BINDIR)
+	@mkdir -p $(BINDIR)
 
-.PHONY: build
+# Build binary
 build:
 	$(GO) build $(GO_BUILD_FLAGS) -o $(BINARY_NAME) $(MAIN_PACKAGE)
-	@echo Size-optimized binary built
+	@echo "Size-optimized binary built: $(BINARY_NAME)"
 
-.PHONY: clean
+# Clean build artifacts
 clean:
-	@if exist $(BINDIR) rmdir /S /Q $(BINDIR)
-	@if exist $(DATABASE_NAME) del $(DATABASE_NAME)
+	@rm -rf $(BINDIR)
+	@rm -f $(DATABASE_NAME)
 
-.PHONY: gui
+# Build GUI binary (Windows)
 gui: clean setup
 	$(GO) build -ldflags="-s -w -H=windowsgui" -trimpath -o $(BINARY_NAME) $(MAIN_PACKAGE)
-	@echo GUI binary complete.
+	@echo "GUI binary complete: $(BINARY_NAME)"
 
-.PHONY: nocgo
+# Build without CGO
 nocgo: clean setup
-	set CGO_ENABLED=0 && $(GO) build $(GO_BUILD_FLAGS) -o $(BINARY_NAME) $(MAIN_PACKAGE)
-	@echo CGO-disabled binary built.
+	CGO_ENABLED=0 $(GO) build $(GO_BUILD_FLAGS) -o $(BINARY_NAME) $(MAIN_PACKAGE)
+	@echo "CGO-disabled binary built: $(BINARY_NAME)"
 
-.PHONY: release
+# Cross-compiled Windows release
 release: clean setup
-	set GOOS=windows && set GOARCH=amd64 && set CGO_ENABLED=0 && $(GO) build $(GO_BUILD_FLAGS) -o $(BINARY_NAME) $(MAIN_PACKAGE)
-	@echo Release build complete.
+	GOOS=windows GOARCH=amd64 CGO_ENABLED=0 $(GO) build $(GO_BUILD_FLAGS) -o $(BINARY_NAME) $(MAIN_PACKAGE)
+	@echo "Release build complete: $(BINARY_NAME)"
 
-.PHONY: remove_db
+# Remove database file
 remove_db:
-	rm ./dlc.sqlite
+	@rm -f $(DATABASE_NAME)
+	@echo "Removed $(DATABASE_NAME)"
 
-.PHONY: parser
+# Build parser binary
 parser:
 	$(GO) build $(GO_BUILD_FLAGS) -o $(PARSER_BINARY_NAME) $(PARSER_PACKAGE)
-
-	
+	@echo "Parser binary built: $(PARSER_BINARY_NAME)"

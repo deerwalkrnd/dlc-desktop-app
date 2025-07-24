@@ -17,43 +17,43 @@ type Class struct {
 
 type Subject struct {
 	gorm.Model
-	Name     string
-	Type     SubjectType
-	ClassId  uint
-	Class    Class     `gorm:"foreignKey:ClassId"`
-	Lectures []Lecture `gorm:"foreignKey:SubjectId"`
+	Name    string
+	Type    SubjectType
+	ClassId uint
+	Class   Class  `gorm:"foreignKey:ClassId"`
+	Units   []Unit `gorm:"foreignKey:SubjectId"`
 }
 
-type Lecture struct {
+type Unit struct {
 	gorm.Model
 	Number    uint
 	Name      string
 	SubjectId uint
-	Subject   Subject  `gorm:"foreignKey:SubjectId"`
-	Lessons   []Lesson `gorm:"foreignKey:LectureId"`
+	Subject   Subject   `gorm:"foreignKey:SubjectId"`
+	Chapters  []Chapter `gorm:"foreignKey:UnitId"`
 }
 
-type Lesson struct {
+type Chapter struct {
 	gorm.Model
 	Name      string
-	Number    float64
+	Number    uint
 	VideoUrl  string
 	TeacherId uint
-	LectureId uint
-	Lecture   Lecture `gorm:"foreignKey:LectureId"`
+	UnitId    uint
+	Unit      Unit    `gorm:"foreignKey:UnitId"`
 	Teacher   Teacher `gorm:"foreignKey:TeacherId"`
 }
 
 type Teacher struct {
 	gorm.Model
 	Name     string
-	Lessions []Lesson `gorm:"foreignKey:TeacherId"`
+	Chapters []Chapter `gorm:"foreignKey:TeacherId"`
 }
 
 func MigrateModels(db *gorm.DB) {
 	db.AutoMigrate(&Class{})
 	db.AutoMigrate(&Subject{})
-	db.AutoMigrate(&Lecture{})
-	db.AutoMigrate(&Lesson{})
+	db.AutoMigrate(&Unit{})
+	db.AutoMigrate(&Chapter{})
 	db.AutoMigrate(&Teacher{})
 }
