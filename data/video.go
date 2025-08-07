@@ -18,7 +18,7 @@ type Video struct {
 	LectureNumber uint
 	LectureName   string
 
-	LessonNumber float64
+	LessonNumber string
 	LessionName  string
 
 	VideoURL string
@@ -26,7 +26,7 @@ type Video struct {
 
 func NewVideo(
 	TeacherName, LessonName, LectureName, SubjectName string,
-	LessionNumber float64, LectureNumber, Class uint,
+	LessionNumber string, LectureNumber, Class uint,
 	SubjectType db.SubjectType, VideoURL string) *Video {
 	return &Video{
 		TeacherName:   TeacherName,

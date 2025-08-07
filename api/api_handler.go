@@ -2,7 +2,9 @@ package api
 
 import (
 	"net/http"
+	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/deerwalkrnd/dlc-desktop-app/db"
@@ -15,7 +17,7 @@ type SimplifiedLesson struct {
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 	Name      string    `json:"name"`
-	Number    float64   `json:"number"`
+	Number    string    `json:"number"`
 	VideoUrl  string    `json:"videoUrl"`
 	TeacherID uint      `json:"teacherId"`
 	LectureID uint      `json:"lectureId"`
@@ -43,6 +45,70 @@ func NewApiHandler(db *gorm.DB) *ApiHandler {
 	return &ApiHandler{
 		db: db,
 	}
+}
+
+// Helper function to parse lesson number for version-style sorting
+func parseLessonNumberForSorting(numberStr string) (int, int, error) {
+	parts := strings.Split(numberStr, ".")
+	if len(parts) == 1 {
+		// No decimal point, treat as X.0
+		major, err := strconv.Atoi(parts[0])
+		if err != nil {
+			return 0, 0, err
+		}
+		return major, 0, nil
+	} else if len(parts) == 2 {
+		// Major.Minor format
+		major, err1 := strconv.Atoi(parts[0])
+		minor, err2 := strconv.Atoi(parts[1])
+		if err1 != nil || err2 != nil {
+			return 0, 0, err1
+		}
+		return major, minor, nil
+	}
+	return 0, 0, strconv.ErrSyntax
+}
+
+// Helper function to sort lessons by version number (1.1 < 1.2 < 1.3 < 1.10)
+func sortLessons(lessons []db.Lesson) {
+	sort.Slice(lessons, func(i, j int) bool {
+		majorI, minorI, errI := parseLessonNumberForSorting(lessons[i].Number)
+		majorJ, minorJ, errJ := parseLessonNumberForSorting(lessons[j].Number)
+
+		// If parsing fails, fall back to string comparison
+		if errI != nil || errJ != nil {
+			return lessons[i].Number < lessons[j].Number
+		}
+
+		// Compare major numbers first
+		if majorI != majorJ {
+			return majorI < majorJ
+		}
+
+		// If major numbers are equal, compare minor numbers
+		return minorI < minorJ
+	})
+}
+
+// Helper function to sort simplified lessons by version number
+func sortSimplifiedLessons(lessons []SimplifiedLesson) {
+	sort.Slice(lessons, func(i, j int) bool {
+		majorI, minorI, errI := parseLessonNumberForSorting(lessons[i].Number)
+		majorJ, minorJ, errJ := parseLessonNumberForSorting(lessons[j].Number)
+
+		// If parsing fails, fall back to string comparison
+		if errI != nil || errJ != nil {
+			return lessons[i].Number < lessons[j].Number
+		}
+
+		// Compare major numbers first
+		if majorI != majorJ {
+			return majorI < majorJ
+		}
+
+		// If major numbers are equal, compare minor numbers
+		return minorI < minorJ
+	})
 }
 
 func (a *ApiHandler) SetupRoutes(router *mux.Router) {
@@ -186,9 +252,8 @@ func (a *ApiHandler) GetLecturesBySubject(w http.ResponseWriter, r *http.Request
 	query := a.db.Where("subject_id = ?", subjectId)
 	query = query.Preload("Lessons.Teacher")
 
-	query = query.Preload("Lessons", func(db *gorm.DB) *gorm.DB {
-		return db.Order("number asc")
-	})
+	// Remove the ORDER BY from the preload since we'll sort manually
+	query = query.Preload("Lessons")
 
 	result := query.Order("number asc").Find(&lectures)
 
@@ -205,6 +270,9 @@ func (a *ApiHandler) GetLecturesBySubject(w http.ResponseWriter, r *http.Request
 
 	simplifiedLectures := make([]SimplifiedLecture, len(lectures))
 	for i, lecture := range lectures {
+		// Sort lessons manually for proper numerical ordering
+		sortLessons(lecture.Lessons)
+
 		simplifiedLectures[i] = SimplifiedLecture{
 			ID:        lecture.ID,
 			CreatedAt: lecture.CreatedAt,
@@ -277,6 +345,9 @@ func (a *ApiHandler) GetLessonsByLecture(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	// Sort lessons manually for proper numerical ordering
+	sortLessons(lessons)
+
 	respondWithJSON(
 		w,
 		http.StatusOK,
@@ -285,5 +356,4 @@ func (a *ApiHandler) GetLessonsByLecture(w http.ResponseWriter, r *http.Request)
 			"count":   len(lessons),
 		},
 	)
-
 }
