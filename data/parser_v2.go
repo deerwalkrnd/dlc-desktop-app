@@ -27,6 +27,7 @@ func ParseVideoV2(path string) *Video {
 		log.Println("error parsing videos!")
 		return nil
 	}
+	lessionNUmberStr := strings.TrimSpace(items[1])
 
 	lessionNumber, err := strconv.ParseFloat(strings.TrimSpace(items[1]), 64)
 	if err != nil {
@@ -57,7 +58,7 @@ func ParseVideoV2(path string) *Video {
 
 	video := &Video{
 		TeacherName:   teacherName,
-		LessonNumber:  lessionNumber,
+		LessonNumber:  lessionNUmberStr,
 		LessionName:   lessionTitle,
 		LectureName:   lectureTitle,
 		SubjectName:   subjectName,

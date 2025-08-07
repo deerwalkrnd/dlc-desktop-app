@@ -36,7 +36,7 @@ type Lecture struct {
 type Lesson struct {
 	gorm.Model
 	Name      string
-	Number    float64
+	Number    string
 	VideoUrl  string
 	TeacherId uint
 	LectureId uint

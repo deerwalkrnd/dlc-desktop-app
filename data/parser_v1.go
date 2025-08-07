@@ -53,7 +53,7 @@ func ParseVideo(path string) *Video {
 
 	video := &Video{
 		TeacherName:   teacherName,
-		LessonNumber:  lessionNumber,
+		LessonNumber:  "lessionNumber",
 		LessionName:   lessionTitle,
 		LectureName:   lectureTitle,
 		SubjectName:   subjectName,

@@ -112,7 +112,7 @@ func getLecture(lectureNumber uint, lectureName string, subjectId uint, DB *gorm
 	return &lecture
 }
 
-func getLesson(lessionName string, lessionNumber float64, videoUrl string, teacherId uint, lectureId uint, DB *gorm.DB) *db.Lesson {
+func getLesson(lessionName string, lessionNumber string, videoUrl string, teacherId uint, lectureId uint, DB *gorm.DB) *db.Lesson {
 	var lesson db.Lesson
 	result := DB.Where("name = ? AND number = ? AND lecture_id = ? AND teacher_id = ?", lessionName, lessionNumber, lectureId, teacherId).First(&lesson)
 
