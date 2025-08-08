@@ -1,7 +1,9 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 
-# If you disover any bugs and or want to provide feedback, please reach out to us at 
+# Contact Information
+
+If you disover any bugs and or want to provide feedback, please reach out to us at 
 
 `aakancha dot thapa @ deerwalk dot edu dot np`
