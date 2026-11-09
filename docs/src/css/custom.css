@@ -4,27 +4,39 @@
  * work well for content-centric websites.
  */
 
-/* You can override the default Infima variables here. */
+/* Deerwalk colours from the logo: sky #2870B8 -> #64ACDC, wordmark #0B5A8C. */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-color-primary: #2870b8;
+  --ifm-color-primary-dark: #2465a6;
+  --ifm-color-primary-darker: #225f9c;
+  --ifm-color-primary-darkest: #1c5590;
+  --ifm-color-primary-light: #3a7fc4;
+  --ifm-color-primary-lighter: #4590cb;
+  --ifm-color-primary-lightest: #64acdc;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
+  --ifm-color-primary: #64acdc;
+  --ifm-color-primary-dark: #4c9fd6;
+  --ifm-color-primary-darker: #4097d3;
+  --ifm-color-primary-darkest: #2f80bd;
+  --ifm-color-primary-light: #7cb9e1;
+  --ifm-color-primary-lighter: #88c0e4;
+  --ifm-color-primary-lightest: #acd3ee;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+.hero--primary {
+  background: linear-gradient(180deg, #2870b8 0%, #64acdc 100%);
+}
+
+.navbar__title {
+  color: #0b5a8c;
+}
+
+[data-theme='dark'] .navbar__title {
+  color: #c4e0f3;
 }
