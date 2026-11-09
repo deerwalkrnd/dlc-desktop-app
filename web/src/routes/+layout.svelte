@@ -1,13 +1,39 @@
 <script lang="ts">
-	import Navbar from '$components/Navbar.svelte';
+	import { navigating } from '$app/state';
+	import Navbar from '$lib/components/Navbar.svelte';
 	import '../app.css';
 
 	let { children } = $props();
 </script>
 
-<div class="flex flex-col">
-	<Navbar />
-	<div class="flex-1">
-		{@render children()}
+<svelte:head>
+	<title>Deerwalk Learning Center</title>
+</svelte:head>
+
+{#if navigating.to}
+	<div
+		class="fixed inset-x-0 top-0 z-20 h-1 overflow-hidden bg-blue-100"
+		role="progressbar"
+		aria-label="Loading"
+	>
+		<div class="h-full w-1/3 animate-[loading_1s_ease-in-out_infinite] bg-blue-600"></div>
 	</div>
+{/if}
+
+<div class="flex min-h-screen flex-col">
+	<Navbar />
+	<main class="flex-1">
+		{@render children()}
+	</main>
 </div>
+
+<style>
+	@keyframes -global-loading {
+		from {
+			transform: translateX(-100%);
+		}
+		to {
+			transform: translateX(300%);
+		}
+	}
+</style>

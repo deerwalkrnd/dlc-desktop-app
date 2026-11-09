@@ -1,10 +1,6 @@
-import { APIURL } from '$lib/constant';
+import { api, orErrorPage } from '$lib/api';
+import type { PageLoad } from './$types';
 
-export const load = async () => {
-	const res = await fetch(`${APIURL}/teachers`);
-	const data = await res.json();
-
-	return {
-		data
-	};
+export const load: PageLoad = async ({ fetch }) => {
+	return { teachers: await orErrorPage(api.teachers(fetch)) };
 };

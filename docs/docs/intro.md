@@ -1,62 +1,62 @@
 ---
 sidebar_position: 1
+title: Getting started
+slug: /intro
 ---
 
-# DLC Desktop Application
+# Getting started
 
-This guide will take you though the process of setting up the Deerwalk Learning Center Desktop Application on your device.
-We will begin things by assuming a few things about your system.
+The DLC Desktop App plays Deerwalk Learning Center lesson videos **without an
+internet connection**. It runs on one computer, finds the lesson videos in a
+folder and shows them, grouped by class, subject and chapter, in the web
+browser.
 
-1. Your System is running on Windows 7 or higher.
-2. Your System has 20MB Disc Space.
-3. Your System has a web-browser installed.
+## Requirements
 
-## Getting Started
+- Windows 10 or later (64-bit). Windows 7 and 8 are not supported.
+- A modern web browser: Chrome, Edge or Firefox.
+- Disk space for your videos. The app itself is under 10 MB.
 
-Get started by **Downloading the DLC Destop App** from **[release](https://github.com/deerwalkrnd/dlc-desktop-app/releases)**.
+## Install
 
-### Verifying
+1. Download the latest `dlc-desktop-app-…-windows-amd64.zip` from the
+   [releases page](https://github.com/deerwalkrnd/dlc-desktop-app/releases).
+2. Extract the zip anywhere, for example `C:\DLC Desktop App`. You get:
 
-After downloading the zip file, ensure that the zip follows the given directory structure.
+   ```
+   dlc-desktop-app-…-windows-amd64
+   ├── dlc-desktop-app.exe   ← the app
+   ├── dlc-check.exe         ← checks video file names (optional)
+   ├── DLC                   ← put your videos here
+   └── README.txt
+   ```
 
-```
-dlc-desktop
-├── dlc-desktop-app.exe
-└── web
-```
-Once this is done, we are ready to add videos/lectures to our application for further use.
+   The web interface is built into `dlc-desktop-app.exe`. There is no separate
+   `web` folder any more.
 
-## Add Video/Lecture
+3. Copy your lesson videos into the `DLC` folder. Sub-folders are fine. Each
+   file name has to follow the [naming format](./adding-videos.md).
 
-To add videos or lectures to our application, we need to create a new folder in the same folder we have the exe and the web files. In that directory we create a new folder with the name of `DLC`. Our app automatically globs over this folder and finds all the lecture files. For our lecture files to be available.
+## Run
 
-The videos must follow a very specific structure.
+Double-click `dlc-desktop-app.exe`. A console window opens and your browser
+shows the app at [http://localhost:3000](http://localhost:3000).
 
+- **Keep the console window open** while you use the app. Closing it stops
+  the app.
+- If the browser does not open by itself, type `http://localhost:3000` into
+  the address bar.
+- Starting the app again while it is already running just opens the browser
+  again.
 
-The video format must be: 
+## Adding more videos later
 
-"TEACHER NAME - LESSION NO - LESSION TITLE - LECTURE TITLE - SUBJECT NAME - SUBJECT TYPE - CLASS .mp4"
+Copy the new files into the `DLC` folder, open the **Library** page in the app
+and press **Rescan library**. You don't need to restart anything.
 
-Example:
-
-"Arjun Khatiwada - 1.2 - Factorization of Polynomials - Polynomials in Maths - Mathematics - OLD - 8 .mp4"
-
-An example folder structure can be something like this:
-
-```
-.
-├── DLC
-│   └── Arjun Khatiwada - 1.2 - Factorization of Polynomials - Polynomials in Maths - Mathematics - OLD - 8 .mp4
-├── dlc-desktop-app.exe
-└── web
-```
-
-The above example just shows one file but we can have as much file as possible in any folder as long as the name is correct, the system should pick it up.
-
-
-## Running The Application
-To run our application, we run the `dlc-desktop-app.exe` file in our folder which should open up our application and if the video structure is correct, the app should be running at `http://localhost:3000` 
-
-
-## Adding new Videos
-If you have added new videos to the `DLC` folder then you would need delete the sqlite database `dlc.sqlite` and re-run the application again.
+:::tip Upgrading from version 1.x
+Older versions kept a database file called `dlc.sqlite` and needed it deleted
+whenever videos changed. That file is no longer used, so you can delete it.
+Replace the old `dlc-desktop-app.exe` and `web` folder with the new
+`dlc-desktop-app.exe`, and keep your `DLC` folder where it is.
+:::

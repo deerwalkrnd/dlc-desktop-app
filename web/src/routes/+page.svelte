@@ -1,40 +1,68 @@
 <script lang="ts">
-	let classes = [
-		{ name: 'Class 1', bgColor: 'bg-red-500', href: '1' },
-		{ name: 'Class 2', bgColor: 'bg-blue-500', href: '2' },
-		{ name: 'Class 3', bgColor: 'bg-green-500', href: '3' },
-		{ name: 'Class 4', bgColor: 'bg-yellow-500', href: '4' },
-		{ name: 'Class 5', bgColor: 'bg-purple-500', href: '5' },
-		{ name: 'Class 6', bgColor: 'bg-pink-500', href: '6' },
-		{ name: 'Class 7', bgColor: 'bg-indigo-500', href: '7' },
-		{ name: 'Class 8', bgColor: 'bg-teal-500', href: '8' },
-		{ name: 'Class 9', bgColor: 'bg-orange-500', href: '9' },
-		{ name: 'Class 10', bgColor: 'bg-cyan-500', href: '10' }
+	import EmptyState from '$lib/components/EmptyState.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
+	import type { PageProps } from './$types';
+
+	let { data }: PageProps = $props();
+
+	// Full class names so Tailwind includes them in the build.
+	const colors = [
+		'from-red-500 to-red-600',
+		'from-blue-500 to-blue-600',
+		'from-green-500 to-green-600',
+		'from-amber-500 to-amber-600',
+		'from-purple-500 to-purple-600',
+		'from-pink-500 to-pink-600',
+		'from-indigo-500 to-indigo-600',
+		'from-teal-500 to-teal-600',
+		'from-orange-500 to-orange-600',
+		'from-cyan-500 to-cyan-600',
+		'from-lime-600 to-lime-700',
+		'from-rose-500 to-rose-600'
 	];
+	const colorFor = (n: number) =>
+		colors[(((n - 1) % colors.length) + colors.length) % colors.length];
 </script>
 
-<svelte:head>
-	<title>{'Deerwalk Learning Center'}</title>
-</svelte:head>
-<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-6 py-12 lg:px-8">
-	<div class="mx-auto max-w-7xl">
-		<div class="mb-12 text-center">
-			<h1 class="mb-4 text-4xl font-bold text-blue-800">Choose Your Class</h1>
-		</div>
+<PageHeader title="Choose your class" />
 
-		<div class="grid grid-cols-2 gap-6 lg:grid-cols-3 xl:grid-cols-5">
-			{#each classes as classItem}
-				<a
-					href={`/class/${classItem.href}`}
-					class="transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
-				>
-					<div class="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-md">
-						<div class={`${classItem.bgColor} flex h-24 items-center justify-center`}>
-							<span class="text-4xl font-bold text-white">{classItem.name}</span>
+<div class="mx-auto max-w-7xl px-6 py-10">
+	{#if data.classes.length}
+		<ul class="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+			{#each data.classes as c (c.number)}
+				<li>
+					<a
+						href="/class/{c.number}"
+						class="block overflow-hidden rounded-xl bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl focus-visible:-translate-y-1"
+					>
+						<div
+							class="flex h-28 items-center justify-center bg-gradient-to-br {colorFor(c.number)}"
+						>
+							<span class="text-4xl font-bold text-white">Class {c.number}</span>
 						</div>
-					</div>
-				</a>
+						<div class="px-4 py-3 text-sm text-slate-600">
+							{c.subjectCount}
+							{c.subjectCount === 1 ? 'subject' : 'subjects'} · {c.lessonCount}
+							{c.lessonCount === 1 ? 'lesson' : 'lessons'}
+						</div>
+					</a>
+				</li>
 			{/each}
-		</div>
-	</div>
+		</ul>
+	{:else}
+		<EmptyState title="No lessons yet">
+			<p>
+				Copy your lesson videos into
+				<code class="rounded bg-slate-100 px-1.5 py-0.5 text-sm break-all text-slate-700"
+					>{data.library.path}</code
+				>
+				and then rescan the library.
+			</p>
+			<a
+				href="/library"
+				class="mt-4 inline-block rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
+				>Open library settings</a
+			>
+		</EmptyState>
+	{/if}
 </div>

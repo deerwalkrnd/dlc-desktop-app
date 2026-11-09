@@ -18,10 +18,13 @@ function HomepageHeader() {
         </Heading>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.buttons}>
+          <Link className="button button--secondary button--lg" to="/docs/intro">
+            Get started
+          </Link>
           <Link
-            className="button button--secondary button--lg"
-            to="/docs/intro">
-            Get Started
+            className="button button--outline button--secondary button--lg"
+            href="https://github.com/deerwalkrnd/dlc-desktop-app/releases">
+            Download
           </Link>
         </div>
       </div>
@@ -30,15 +33,13 @@ function HomepageHeader() {
 }
 
 export default function Home(): ReactNode {
-  const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
+      title="Offline lesson videos for classrooms"
+      description="Play Deerwalk Learning Center lesson videos offline, organised by class, subject and chapter.">
       <HomepageHeader />
       <main>
-        {/* <HomepageFeatures /> */}
-        
+        <HomepageFeatures />
       </main>
     </Layout>
   );

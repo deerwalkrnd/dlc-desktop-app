@@ -6,7 +6,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'DLC Desktop Application',
-  tagline: 'Let\'s Educate Nepal.',
+  tagline: 'Lesson videos for every classroom, even without internet.',
   favicon: 'img/dlc.png',
 
   // Set the production url of your site here
@@ -21,7 +21,7 @@ const config: Config = {
   projectName: 'dlc-desktop-app', // Usually your repo name.
 
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenMarkdownLinks: 'throw',
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -37,52 +37,38 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+          editUrl: 'https://github.com/deerwalkrnd/dlc-desktop-app/tree/main/docs/',
         },
-        // blog: {
-        //   showReadingTime: true,
-        //   feedOptions: {
-        //     type: ['rss', 'atom'],
-        //     xslt: true,
-        //   },
-        //   // Please change this to your repo.
-        //   // Remove this to remove the "edit this page" links.
-        //   editUrl:
-        //     'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-        //   // Useful options to enforce blogging best practices
-        //   onInlineTags: 'warn',
-        //   onInlineAuthors: 'warn',
-        //   onUntruncatedBlogPosts: 'warn',
-        // },
-        // theme: {
-        //   customCss: './src/css/custom.css',
-        // },
+        blog: false,
+        theme: {
+          customCss: './src/css/custom.css',
+        },
       } satisfies Preset.Options,
     ],
   ],
 
   themeConfig: {
-    // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    image: 'img/dlc.png',
     navbar: {
-      title: 'DLC Desktop Application',
+      title: 'DLC Desktop App',
       logo: {
-        alt: 'My Site Logo',
+        alt: 'Deerwalk Learning Center',
         src: 'img/dlc.png',
       },
       items: [
         {
           type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
+          sidebarId: 'guideSidebar',
           position: 'left',
-          label: 'Tutorial',
+          label: 'Guide',
         },
-        // {to: '/blog', label: 'Blog', position: 'left'},
         {
-          href: 'https://github.com/deerwalkrnd',
+          href: 'https://github.com/deerwalkrnd/dlc-desktop-app/releases',
+          label: 'Download',
+          position: 'right',
+        },
+        {
+          href: 'https://github.com/deerwalkrnd/dlc-desktop-app',
           label: 'GitHub',
           position: 'right',
         },
@@ -92,46 +78,22 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Guide',
           items: [
-            {
-              label: 'Tutorial',
-              to: '/docs/intro',
-            },
+            {label: 'Getting started', to: '/docs/intro'},
+            {label: 'Adding videos', to: '/docs/adding-videos'},
+            {label: 'Troubleshooting', to: '/docs/troubleshooting'},
           ],
         },
-        // {
-        //   title: 'Community',
-        //   items: [
-        //     {
-        //       label: 'Stack Overflow',
-        //       href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-        //     },
-        //     {
-        //       label: 'Discord',
-        //       href: 'https://discordapp.com/invite/docusaurus',
-        //     },
-        //     {
-        //       label: 'X',
-        //       href: 'https://x.com/docusaurus',
-        //     },
-        //   ],
-        // },
-        // {
-        //   title: 'More',
-        //   items: [
-        //     {
-        //       label: 'Blog',
-        //       to: '/blog',
-        //     },
-        //     {
-        //       label: 'GitHub',
-        //       href: 'https://github.com/facebook/docusaurus',
-        //     },
-        //   ],
-        // },
+        {
+          title: 'Project',
+          items: [
+            {label: 'Releases', href: 'https://github.com/deerwalkrnd/dlc-desktop-app/releases'},
+            {label: 'Developer guide', to: '/docs/developers'},
+          ],
+        },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} DLC Desktop App. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Deerwalk Learning Center.`,
     },
     prism: {
       theme: prismThemes.github,

@@ -1,4 +1,6 @@
 bin/
+dist/
+DLC/
+# Database files from releases before 2.0 (no longer used)
 dlc.db
 dlc.sqlite
-DLC/
