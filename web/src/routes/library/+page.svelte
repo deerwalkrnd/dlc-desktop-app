@@ -38,14 +38,14 @@
 </svelte:head>
 
 {#snippet issueList(title: string, issues: Issue[], tone: 'red' | 'amber', help: string)}
-	<section class="rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
-		<header class="border-b border-slate-100 px-6 py-4">
+	<section class="ring-brand-100 rounded-xl bg-white shadow-sm ring-1">
+		<header class="border-brand-100 border-b px-6 py-4">
 			<h2 class="text-lg font-semibold {tone === 'red' ? 'text-red-700' : 'text-amber-700'}">
 				{title} ({issues.length})
 			</h2>
 			<p class="text-sm text-slate-500">{help}</p>
 		</header>
-		<ul class="divide-y divide-slate-100">
+		<ul class="divide-brand-100 divide-y">
 			{#each issues as issue (issue.path + issue.message)}
 				<li class="px-6 py-3">
 					<p class="font-mono text-sm break-all text-slate-800">{issue.path}</p>
@@ -62,7 +62,7 @@
 
 <div class="mx-auto flex max-w-5xl flex-col gap-6 px-6 py-10">
 	<section
-		class="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:flex-row sm:items-center"
+		class="ring-brand-100 flex flex-col gap-4 rounded-xl bg-white p-6 shadow-sm ring-1 sm:flex-row sm:items-center"
 	>
 		<div class="min-w-0 flex-1">
 			<p class="text-sm font-medium text-slate-500">Video folder</p>
@@ -78,7 +78,7 @@
 			</p>
 		</div>
 		<button
-			class="flex shrink-0 items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+			class="bg-brand-600 hover:bg-brand-700 flex shrink-0 items-center justify-center gap-2 rounded-md px-4 py-2 font-medium text-white disabled:opacity-60"
 			onclick={runRescan}
 			disabled={rescan.state === 'scanning'}
 		>
@@ -117,7 +117,7 @@
 		)}
 	{/if}
 
-	<section class="rounded-xl bg-slate-100 p-6 text-sm text-slate-700">
+	<section class="bg-brand-50 rounded-xl p-6 text-sm text-slate-700">
 		<h2 class="mb-2 font-semibold text-slate-900">Naming format</h2>
 		<p class="font-mono break-words">
 			TEACHER - LESSON NO - CHAPTER TITLE - LESSON TITLE - SUBJECT - OLD|NEW - CLASS.mp4

@@ -12,11 +12,11 @@
 
 {#if navigating.to}
 	<div
-		class="fixed inset-x-0 top-0 z-20 h-1 overflow-hidden bg-blue-100"
+		class="bg-brand-100 fixed inset-x-0 top-0 z-20 h-1 overflow-hidden"
 		role="progressbar"
 		aria-label="Loading"
 	>
-		<div class="h-full w-1/3 animate-[loading_1s_ease-in-out_infinite] bg-blue-600"></div>
+		<div class="bg-brand-600 h-full w-1/3 animate-[loading_1s_ease-in-out_infinite]"></div>
 	</div>
 {/if}
 

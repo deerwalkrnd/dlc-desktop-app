@@ -22,7 +22,7 @@
 
 <PageHeader title="Class {data.cls.number}">
 	{#if data.cls.syllabi.length > 1}
-		<div class="inline-flex rounded-lg bg-slate-100 p-1" role="tablist" aria-label="Syllabus">
+		<div class="bg-brand-50 inline-flex rounded-lg p-1" role="tablist" aria-label="Syllabus">
 			{#each data.cls.syllabi as s (s)}
 				<a
 					href="?syllabus={s}"
@@ -31,7 +31,7 @@
 					data-sveltekit-replacestate
 					data-sveltekit-noscroll
 					class="rounded-md px-4 py-1.5 text-sm font-medium transition {s === syllabus
-						? 'bg-white text-blue-700 shadow-sm'
+						? 'text-brand-700 bg-white shadow-sm'
 						: 'text-slate-600 hover:text-slate-900'}">{syllabusLabel(s)}</a
 				>
 			{/each}
@@ -48,9 +48,9 @@
 				<li>
 					<a
 						href={subjectHref(data.cls.number, subject.slug)}
-						class="flex h-full flex-col gap-2 rounded-xl bg-white p-6 shadow-md ring-1 ring-blue-100 transition hover:-translate-y-1 hover:shadow-xl hover:ring-blue-300"
+						class="ring-brand-100 hover:ring-brand-300 flex h-full flex-col gap-2 rounded-xl bg-white p-6 shadow-md ring-1 transition hover:-translate-y-1 hover:shadow-xl"
 					>
-						<h2 class="text-2xl font-semibold text-indigo-800">{subject.name}</h2>
+						<h2 class="text-brand-800 text-2xl font-semibold">{subject.name}</h2>
 						<p class="text-sm text-slate-500">
 							{subject.chapterCount}
 							{subject.chapterCount === 1 ? 'chapter' : 'chapters'} · {subject.lessonCount}

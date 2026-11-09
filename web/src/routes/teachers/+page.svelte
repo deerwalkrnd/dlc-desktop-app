@@ -16,16 +16,16 @@
 	{#if data.teachers.length}
 		<ul class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 			{#each data.teachers as teacher (teacher.name)}
-				<li class="overflow-hidden rounded-xl bg-white shadow-md">
-					<div class="flex h-36 items-center justify-center bg-blue-100">
+				<li class="ring-brand-100 overflow-hidden rounded-xl bg-white shadow-sm ring-1">
+					<div class="bg-brand-50 flex h-36 items-center justify-center">
 						<div
-							class="grid size-24 place-items-center rounded-full bg-blue-500 text-3xl font-bold text-white shadow-md"
+							class="from-brand-600 to-brand-400 grid size-24 place-items-center rounded-full bg-linear-to-b text-3xl font-bold text-white shadow-md ring-4 ring-white"
 						>
 							{teacher.name.charAt(0)}
 						</div>
 					</div>
-					<div class="border-t border-blue-100 p-4 text-center">
-						<h2 class="text-lg font-medium text-blue-800">{teacher.name}</h2>
+					<div class="border-brand-100 border-t p-4 text-center">
+						<h2 class="text-brand-800 text-lg font-medium">{teacher.name}</h2>
 						<p class="mt-1 text-sm text-slate-500">
 							{teacher.lessonCount}
 							{teacher.lessonCount === 1 ? 'lesson' : 'lessons'}

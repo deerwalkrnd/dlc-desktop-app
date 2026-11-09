@@ -35,6 +35,9 @@
 		lesson: PlayableLesson | null;
 		hasPrevious?: boolean;
 		hasNext?: boolean;
+		/** Short description of the previous/next lesson, shown in the footer. */
+		previousLabel?: string;
+		nextLabel?: string;
 		onclose: () => void;
 		onprevious?: () => void;
 		onnext?: () => void;
@@ -44,6 +47,8 @@
 		lesson,
 		hasPrevious = false,
 		hasNext = false,
+		previousLabel,
+		nextLabel,
 		onclose,
 		onprevious,
 		onnext
@@ -228,8 +233,12 @@
 		}
 	}
 
+	// On-video controls: white on the navy gradient.
 	const control =
-		'grid size-10 place-items-center rounded-md text-white transition hover:bg-white/15 disabled:opacity-40';
+		'grid size-10 place-items-center rounded-full text-white transition hover:bg-white/15 disabled:opacity-40';
+	// Footer lesson navigation: white cards on the light-blue strip.
+	const navButton =
+		'group flex min-w-0 items-center gap-3 rounded-lg bg-white px-3 py-2 text-left ring-1 ring-brand-100 transition hover:bg-brand-50 hover:ring-brand-300 disabled:invisible';
 
 	const progress = $derived(duration ? (currentTime / duration) * 100 : 0);
 	const buffered = $derived(duration ? (bufferedEnd / duration) * 100 : 0);
@@ -237,39 +246,21 @@
 
 <dialog
 	bind:this={dialog}
-	class="m-auto w-full max-w-5xl overflow-hidden rounded-xl bg-slate-900 p-0 text-white shadow-2xl backdrop:bg-black/70"
+	class="ring-brand-100 backdrop:bg-brand-950/60 m-auto w-full max-w-5xl overflow-hidden rounded-2xl bg-white p-0 text-slate-900 shadow-2xl ring-1 backdrop:backdrop-blur-sm"
 	aria-label={lesson?.title ?? 'Video player'}
 	{onkeydown}
 	onclose={() => lesson && onclose()}
 	onclick={(e) => e.target === dialog && onclose()}
 >
-	<header class="flex items-center gap-3 px-5 py-3">
+	<header class="flex items-start gap-3 px-6 py-4">
 		<div class="min-w-0 flex-1">
-			<h2 class="truncate text-lg font-semibold">{lesson?.title}</h2>
+			<h2 class="text-brand-800 truncate text-lg font-semibold">{lesson?.title}</h2>
 			{#if lesson?.subtitle}
-				<p class="truncate text-sm text-slate-400">{lesson.subtitle}</p>
+				<p class="truncate text-sm text-slate-500">{lesson.subtitle}</p>
 			{/if}
 		</div>
 		<button
-			class="rounded-md p-2 text-slate-300 hover:bg-white/10 hover:text-white disabled:opacity-30"
-			onclick={onprevious}
-			disabled={!hasPrevious}
-			aria-label="Previous lesson"
-			title="Previous lesson (Shift+P)"
-		>
-			<Icon name="previous" />
-		</button>
-		<button
-			class="rounded-md p-2 text-slate-300 hover:bg-white/10 hover:text-white disabled:opacity-30"
-			onclick={onnext}
-			disabled={!hasNext}
-			aria-label="Next lesson"
-			title="Next lesson (Shift+N)"
-		>
-			<Icon name="next" />
-		</button>
-		<button
-			class="rounded-md p-2 text-slate-300 hover:bg-white/10 hover:text-white"
+			class="hover:bg-brand-50 hover:text-brand-700 -mr-2 rounded-full p-2 text-slate-500 transition"
 			onclick={onclose}
 			aria-label="Close player"
 			title="Close (Esc)"
@@ -321,33 +312,35 @@
 		{#if machine.status === 'loading' || machine.status === 'buffering'}
 			<div class="pointer-events-none absolute inset-0 grid place-items-center" role="status">
 				<span
-					class="size-14 animate-spin rounded-full border-4 border-white/20 border-t-white"
+					class="border-t-brand-300 size-14 animate-spin rounded-full border-4 border-white/25"
 					aria-label="Loading"
 				></span>
 			</div>
 		{:else if machine.status === 'error'}
 			<div
-				class="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/80 p-6 text-center"
+				class="bg-brand-950/85 absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center text-white"
 				role="alert"
 			>
-				<Icon name="alert" class="size-12 text-red-400" />
+				<span class="grid size-14 place-items-center rounded-full bg-white/10">
+					<Icon name="alert" class="text-brand-200 size-8" />
+				</span>
 				<p class="max-w-md text-lg">{machine.error}</p>
 				<button
-					class="rounded-md bg-white px-4 py-2 font-medium text-slate-900 hover:bg-slate-200"
-					onclick={retry}>Try again</button
+					class="bg-brand-600 hover:bg-brand-500 flex items-center gap-2 rounded-lg px-4 py-2 font-medium text-white"
+					onclick={retry}><Icon name="refresh" class="size-4" /> Try again</button
 				>
 			</div>
 		{:else if machine.status === 'ended'}
-			<div class="absolute inset-0 flex items-center justify-center gap-4 bg-black/70">
+			<div class="bg-brand-950/75 absolute inset-0 flex items-center justify-center gap-3">
 				<button
-					class="flex items-center gap-2 rounded-md bg-white/15 px-4 py-2 font-medium hover:bg-white/25"
+					class="text-brand-800 hover:bg-brand-50 flex items-center gap-2 rounded-lg bg-white px-4 py-2 font-medium"
 					onclick={toggle}
 				>
 					<Icon name="replay" /> Watch again
 				</button>
 				{#if hasNext}
 					<button
-						class="flex items-center gap-2 rounded-md bg-indigo-500 px-4 py-2 font-medium hover:bg-indigo-400"
+						class="bg-brand-600 hover:bg-brand-500 flex items-center gap-2 rounded-lg px-4 py-2 font-medium text-white"
 						onclick={onnext}
 					>
 						Next lesson <Icon name="next" />
@@ -356,7 +349,7 @@
 			</div>
 		{:else if machine.status === 'paused'}
 			<button
-				class="absolute inset-0 m-auto grid size-20 place-items-center rounded-full bg-black/50 hover:bg-black/70"
+				class="bg-brand-600/90 hover:bg-brand-600 absolute inset-0 m-auto grid size-20 place-items-center rounded-full text-white shadow-lg ring-4 ring-white/30 transition hover:scale-105"
 				onclick={toggle}
 				aria-label="Play"
 			>
@@ -366,7 +359,7 @@
 
 		<!-- Controls -->
 		<div
-			class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent px-4 pt-10 pb-3 transition-opacity duration-200 {showControls
+			class="from-brand-950/90 via-brand-950/50 absolute inset-x-0 bottom-0 bg-linear-to-t to-transparent px-4 pt-12 pb-3 text-white transition-opacity duration-200 {showControls
 				? 'opacity-100'
 				: 'pointer-events-none opacity-0'}"
 		>
@@ -443,16 +436,16 @@
 					oninput={(e) => setVolume(Number(e.currentTarget.value))}
 				/>
 
-				<span class="ml-2 text-sm text-slate-200 tabular-nums">
+				<span class="ml-2 text-sm text-white/90 tabular-nums">
 					{formatTime(currentTime)} / {formatTime(duration)}
 				</span>
 
 				<span class="flex-1"></span>
 
-				<label class="flex items-center gap-1 text-sm text-slate-200">
+				<label class="flex items-center gap-1 text-sm text-white">
 					<span class="sr-only">Playback speed</span>
 					<select
-						class="rounded bg-white/10 px-1.5 py-1 text-white hover:bg-white/20"
+						class="rounded-full bg-white/15 px-2.5 py-1 text-white hover:bg-white/25"
 						value={rate}
 						onchange={(e) => (video.playbackRate = Number(e.currentTarget.value))}
 					>
@@ -473,6 +466,42 @@
 			</div>
 		</div>
 	</div>
+	<footer
+		class="border-brand-100 bg-brand-50 flex items-center justify-between gap-4 border-t px-6 py-3"
+	>
+		<button
+			class={navButton}
+			onclick={onprevious}
+			disabled={!hasPrevious}
+			title="Previous lesson (Shift+P)"
+		>
+			<Icon name="previous" class="text-brand-600 size-4 shrink-0" />
+			<span class="min-w-0">
+				<span class="block text-xs font-medium tracking-wide text-slate-500 uppercase"
+					>Previous</span
+				>
+				<span class="text-brand-800 block truncate text-sm font-medium">{previousLabel ?? ''}</span>
+			</span>
+		</button>
+
+		<p class="hidden text-center text-xs text-slate-500 lg:block">
+			<kbd class="kbd">Space</kbd> play/pause · <kbd class="kbd">←</kbd><kbd class="kbd">→</kbd>
+			10s · <kbd class="kbd">F</kbd> full screen
+		</p>
+
+		<button
+			class="{navButton} justify-end text-right"
+			onclick={onnext}
+			disabled={!hasNext}
+			title="Next lesson (Shift+N)"
+		>
+			<span class="min-w-0">
+				<span class="block text-xs font-medium tracking-wide text-slate-500 uppercase">Next</span>
+				<span class="text-brand-800 block truncate text-sm font-medium">{nextLabel ?? ''}</span>
+			</span>
+			<Icon name="next" class="text-brand-600 size-4 shrink-0" />
+		</button>
+	</footer>
 </dialog>
 
 <style>
@@ -483,7 +512,7 @@
 		cursor: pointer;
 		background: linear-gradient(
 			to right,
-			var(--color-indigo-400) var(--progress),
+			var(--color-brand-400) var(--progress),
 			rgb(255 255 255 / 0.45) var(--progress),
 			rgb(255 255 255 / 0.45) var(--buffered),
 			rgb(255 255 255 / 0.2) var(--buffered)
@@ -498,6 +527,7 @@
 		height: 0.9rem;
 		border-radius: 9999px;
 		background: white;
+		box-shadow: 0 0 0 3px var(--color-brand-400);
 	}
 	.seek::-moz-range-thumb {
 		width: 0.9rem;
@@ -505,9 +535,24 @@
 		border: 0;
 		border-radius: 9999px;
 		background: white;
+		box-shadow: 0 0 0 3px var(--color-brand-400);
 	}
 
 	.volume {
-		accent-color: white;
+		accent-color: var(--color-brand-300);
+	}
+
+	.kbd {
+		display: inline-block;
+		min-width: 1.4em;
+		margin: 0 0.1em;
+		padding: 0 0.3em;
+		border-radius: 0.25rem;
+		background: white;
+		box-shadow: inset 0 -1px 0 var(--color-brand-200);
+		border: 1px solid var(--color-brand-100);
+		color: var(--color-brand-800);
+		font-family: inherit;
+		font-size: 0.7rem;
 	}
 </style>

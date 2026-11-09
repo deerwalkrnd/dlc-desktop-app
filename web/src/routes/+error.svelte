@@ -27,7 +27,7 @@
 	{/if}
 
 	<div class="flex gap-3">
-		<a href="/" class="rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
+		<a href="/" class="bg-brand-600 hover:bg-brand-700 rounded-md px-4 py-2 font-medium text-white"
 			>Go to classes</a
 		>
 		{#if !notFound}

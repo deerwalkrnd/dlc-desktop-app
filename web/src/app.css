@@ -1,8 +1,39 @@
 @import 'tailwindcss';
 
+/*
+ * Deerwalk colour system, taken from the logo:
+ *   sky gradient  #2870B8 (brand-600) -> #64ACDC (brand-400)
+ *   wordmark      #0B5A8C (brand-800)
+ * Use brand-* for every accent, slate-* for neutral text and borders, and
+ * red/amber/green only for status messages.
+ */
+@theme {
+	--color-brand-50: #f2f8fd;
+	--color-brand-100: #e1eff9;
+	--color-brand-200: #c4e0f3;
+	--color-brand-300: #96c8e9;
+	--color-brand-400: #64acdc;
+	--color-brand-500: #4590cb;
+	--color-brand-600: #2870b8;
+	--color-brand-700: #1f5f9f;
+	--color-brand-800: #0b5a8c;
+	--color-brand-900: #0a466d;
+	--color-brand-950: #062c46;
+}
+
 @layer base {
 	button:not(:disabled),
 	[role='button']:not(:disabled) {
 		cursor: pointer;
+	}
+
+	:focus-visible {
+		outline: 2px solid var(--color-brand-500);
+		outline-offset: 2px;
+	}
+
+	::selection {
+		background: var(--color-brand-200);
+		color: var(--color-brand-950);
 	}
 }
