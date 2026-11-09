@@ -64,6 +64,7 @@ func New(lib *library.Library, opts Options) (*Server, error) {
 	mux.HandleFunc("GET /api/classes/{number}", s.getClass)
 	mux.HandleFunc("GET /api/classes/{number}/subjects/{slug}", s.getSubject)
 	mux.HandleFunc("GET /api/teachers", s.listTeachers)
+	mux.HandleFunc("GET /api/search", s.search)
 	mux.HandleFunc("GET /api/library", s.libraryStatus)
 	mux.HandleFunc("POST /api/library/rescan", s.rescan)
 	mux.HandleFunc("GET /api/", func(w http.ResponseWriter, r *http.Request) {

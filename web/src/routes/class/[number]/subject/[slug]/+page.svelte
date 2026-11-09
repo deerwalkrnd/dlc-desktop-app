@@ -1,8 +1,20 @@
 <script lang="ts">
-	import { subjectHref, syllabusLabel, type Lesson } from '$lib/api';
-	import EmptyState from '$lib/components/EmptyState.svelte';
-	import Icon from '$lib/components/Icon.svelte';
-	import VideoPlayer, { type PlayableLesson } from '$lib/components/VideoPlayer.svelte';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
+	import {
+		lessonHref,
+		lessonSubtitle,
+		lessonTitle,
+		subjectHref,
+		syllabusLabel,
+		type Lesson
+	} from '#lib/api.ts';
+	import EmptyState from '#lib/components/EmptyState.svelte';
+	import Icon from '#lib/components/Icon.svelte';
+	import VideoPlayer, { type PlayableLesson } from '#lib/components/VideoPlayer.svelte';
+	import { formatTime } from '#lib/player.ts';
+	import { progress } from '#lib/progress.svelte.ts';
+	import { resumePosition, watchedFraction } from '#lib/progress.ts';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -14,7 +26,10 @@
 		data.subject.chapters.flatMap((ch) => ch.lessons.map((lesson) => ({ lesson, chapter: ch })))
 	);
 
-	let currentId = $state<string | null>(null);
+	// The playing lesson lives in the URL (?lesson=ID), so search results and
+	// "Continue watching" can link straight to it, Back closes the player and
+	// a reload keeps it open.
+	const currentId = $derived(page.url.searchParams.get('lesson'));
 	const index = $derived(playlist.findIndex((p) => p.lesson.id === currentId));
 	const playing = $derived.by((): PlayableLesson | null => {
 		const item = playlist[index];
@@ -22,24 +37,49 @@
 		return {
 			id: item.lesson.id,
 			mediaUrl: item.lesson.mediaUrl,
-			title: `Lesson ${item.lesson.number}: ${item.lesson.title}`,
-			subtitle: `Chapter ${item.chapter.number}: ${item.chapter.title} · ${item.lesson.teacher}`
+			title: lessonTitle(item.lesson),
+			subtitle: lessonSubtitle(item.chapter, item.lesson.teacher, data.subject.name),
+			href: lessonHref(data.subject.class, data.subject.slug, item.lesson.id)
 		};
 	});
+
+	// True when this page opened the player (so closing can go Back instead
+	// of leaving a duplicate history entry).
+	let openedHere = false;
+
+	function urlWithLesson(id: string | null): URL {
+		const url = new URL(page.url.href);
+		if (id) url.searchParams.set('lesson', id);
+		else url.searchParams.delete('lesson');
+		return url;
+	}
+
+	function play(lesson: Lesson) {
+		openedHere = true;
+		goto(urlWithLesson(lesson.id), { reset: false });
+	}
+
+	function step(delta: number) {
+		const next = playlist[index + delta];
+		if (next) goto(urlWithLesson(next.lesson.id), { replace: true, reset: false });
+	}
+
+	function close() {
+		if (openedHere) {
+			openedHere = false;
+			history.back();
+		} else {
+			goto(urlWithLesson(null), { replace: true, reset: false });
+		}
+	}
 
 	const labelAt = (i: number) => {
 		const item = playlist[i];
 		return item ? `${item.lesson.number} · ${item.lesson.title}` : undefined;
 	};
 
-	function play(lesson: Lesson) {
-		currentId = lesson.id;
-	}
-
-	function step(delta: number) {
-		const next = playlist[index + delta];
-		if (next) currentId = next.lesson.id;
-	}
+	const watchedIn = (lessons: Lesson[]) =>
+		lessons.filter((l) => progress.get(l.id)?.completed).length;
 </script>
 
 <svelte:head>
@@ -90,22 +130,40 @@
 
 		<div class="flex flex-col gap-6">
 			{#each data.subject.chapters as chapter (`${chapter.number}:${chapter.title}`)}
+				{@const watched = watchedIn(chapter.lessons)}
 				<article class="ring-brand-100 rounded-xl bg-white p-6 shadow-sm ring-1">
-					<h2 class="border-brand-100 text-brand-800 mb-4 border-b pb-3 text-xl font-bold">
-						Chapter {chapter.number}: {chapter.title}
-					</h2>
+					<header
+						class="border-brand-100 mb-4 flex items-baseline justify-between gap-4 border-b pb-3"
+					>
+						<h2 class="text-brand-800 text-xl font-bold">
+							Chapter {chapter.number}: {chapter.title}
+						</h2>
+						{#if watched > 0}
+							<span class="shrink-0 text-sm text-slate-500">
+								{watched} of {chapter.lessons.length} watched
+							</span>
+						{/if}
+					</header>
 					<ol class="flex flex-col gap-2">
 						{#each chapter.lessons as lesson (lesson.id)}
+							{@const p = progress.get(lesson.id)}
+							{@const done = p?.completed ?? false}
+							{@const resumeAt = resumePosition(p)}
 							<li>
 								<button
 									type="button"
-									class="group bg-brand-50 hover:bg-brand-100 focus-visible:ring-brand-500 flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left transition focus-visible:ring-2 focus-visible:outline-none"
+									class="group bg-brand-50 hover:bg-brand-100 relative flex w-full items-center gap-3 overflow-hidden rounded-lg px-4 py-3 text-left transition"
 									onclick={() => play(lesson)}
 								>
 									<span
-										class="text-brand-600 group-hover:bg-brand-600 grid size-9 shrink-0 place-items-center rounded-full bg-white shadow-sm group-hover:text-white"
+										class="grid size-9 shrink-0 place-items-center rounded-full shadow-sm transition {done
+											? 'bg-brand-600 text-white'
+											: 'text-brand-600 group-hover:bg-brand-600 bg-white group-hover:text-white'}"
 									>
-										<Icon name="play" class="size-4 translate-x-px" />
+										<Icon
+											name={done ? 'check' : 'play'}
+											class="size-4 {done ? '' : 'translate-x-px'}"
+										/>
 									</span>
 									<span class="min-w-0 flex-1">
 										<span class="block font-semibold text-slate-800">
@@ -114,6 +172,21 @@
 										</span>
 										<span class="block text-sm text-slate-500">{lesson.teacher}</span>
 									</span>
+									{#if done}
+										<span class="text-brand-700 shrink-0 text-sm font-medium">Watched</span>
+									{:else if resumeAt !== null}
+										<span class="text-brand-700 shrink-0 text-sm font-medium">
+											Resume at {formatTime(resumeAt)}
+										</span>
+									{/if}
+									{#if resumeAt !== null}
+										<span class="bg-brand-100 absolute inset-x-0 bottom-0 h-1" aria-hidden="true">
+											<span
+												class="bg-brand-400 block h-full"
+												style="width: {watchedFraction(p) * 100}%"
+											></span>
+										</span>
+									{/if}
 								</button>
 							</li>
 						{/each}
@@ -130,7 +203,7 @@
 	hasNext={index >= 0 && index < playlist.length - 1}
 	previousLabel={labelAt(index - 1)}
 	nextLabel={labelAt(index + 1)}
-	onclose={() => (currentId = null)}
+	onclose={close}
 	onprevious={() => step(-1)}
 	onnext={() => step(1)}
 />

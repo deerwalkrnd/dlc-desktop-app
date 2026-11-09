@@ -54,6 +54,22 @@ export interface Teacher {
 	subjects: string[];
 }
 
+export interface SearchResult {
+	class: number;
+	subjectSlug: string;
+	subjectName: string;
+	syllabus: Syllabus;
+	chapterNumber: number;
+	chapterTitle: string;
+	lesson: Lesson;
+}
+
+export interface SearchResponse {
+	query: string;
+	total: number;
+	results: SearchResult[];
+}
+
 export interface Issue {
 	path: string;
 	message: string;
@@ -116,6 +132,11 @@ export const api = {
 		),
 	teachers: (f: Fetch) =>
 		request<{ teachers: Teacher[] }>(f, '/api/teachers').then((r) => r.teachers),
+	search: (f: Fetch, query: string, limit = 50) =>
+		request<SearchResponse>(
+			f,
+			`/api/search?q=${encodeURIComponent(query)}&limit=${encodeURIComponent(limit)}`
+		),
 	library: (f: Fetch) => request<LibraryStatus>(f, '/api/library'),
 	rescan: (f: Fetch) => request<LibraryStatus>(f, '/api/library/rescan', { method: 'POST' })
 };
@@ -137,4 +158,24 @@ export function syllabusLabel(s: Syllabus): string {
 /** Path to a subject page. */
 export function subjectHref(classNumber: number, slug: string): string {
 	return `/class/${classNumber}/subject/${encodeURIComponent(slug)}`;
+}
+
+/** Path that opens a subject page with the given lesson playing. */
+export function lessonHref(classNumber: number, slug: string, lessonId: string): string {
+	return `${subjectHref(classNumber, slug)}?lesson=${encodeURIComponent(lessonId)}`;
+}
+
+/** Player heading and subheading for a lesson. */
+export function lessonTitle(lesson: Pick<Lesson, 'number' | 'title'>): string {
+	return `Lesson ${lesson.number}: ${lesson.title}`;
+}
+
+export function lessonSubtitle(
+	chapter: Pick<Chapter, 'number' | 'title'>,
+	teacher: string,
+	subject?: string
+): string {
+	const parts = [`Chapter ${chapter.number}: ${chapter.title}`, teacher];
+	if (subject) parts.unshift(subject);
+	return parts.join(' · ');
 }

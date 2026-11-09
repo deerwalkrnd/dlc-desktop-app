@@ -40,7 +40,7 @@ func TestBuildFakeLibrary(t *testing.T) {
 		"._Arjun Khatiwada - 1.1 - Factorization of Polynomials - Polynomials in Maths - Mathematics - OLD - 8 .mp4",
 		"notes.txt",
 		"random clip.mp4",
-		// Parses with a warning.
+		// Lower-case syllabus.
 		"Sita Rai - 1.2 - Matter - Solids - Science - old - 9 .mp4",
 		// Duplicate of 1.2 in another folder.
 		"backup/Arjun Khatiwada - 1.2 - Factorization of Polynomials - Polynomials in Maths - Mathematics - OLD - 8 .mp4",
@@ -83,16 +83,17 @@ func TestBuildFakeLibrary(t *testing.T) {
 		t.Fatalf("class 9 subjects = %s", got)
 	}
 	sciNew := c9.Subject("science-new")
-	if len(sciNew.Chapters) != 2 || sciNew.Chapters[0].Number != 1 || sciNew.Chapters[1].Number != 3 {
+	if len(sciNew.Chapters) != 1 || sciNew.Chapters[0].Number != 3 {
 		t.Fatalf("science-new chapters = %+v", sciNew.Chapters)
 	}
-	hy := sciNew.Chapters[1].Lessons[0]
+	hy := sciNew.Chapters[0].Lessons[0]
 	if hy.Teacher != "Ram-Prasad Sharma" || hy.Title != "Mid-term Review" {
 		t.Fatalf("hyphenated lesson = %+v", hy)
 	}
-	// "old" (lower case) keeps legacy meaning: NEW syllabus, plus a warning.
-	if sciNew.Chapters[0].Lessons[0].Title != "Solids" || len(c9.Subject("science-old").Chapters[0].Lessons) != 1 {
-		t.Fatal("lower-case 'old' should be treated as NEW")
+	// "old" in lower case means the old syllabus, just like "OLD".
+	sciOld := c9.Subject("science-old").Chapters[0]
+	if got := lessonNumbers(sciOld); got != "1.1,1.2" || sciOld.Lessons[1].Title != "Solids" {
+		t.Fatalf("lower-case 'old' should join the old syllabus, got %s", got)
 	}
 
 	if x.LessonCount() != 9 {
@@ -102,7 +103,6 @@ func TestBuildFakeLibrary(t *testing.T) {
 		t.Fatalf("skipped = %+v", x.Skipped)
 	}
 	wantWarn := map[string]string{
-		"Sita Rai - 1.2 - Matter - Solids - Science - old - 9 .mp4":                                                       "OLD",
 		"backup/Arjun Khatiwada - 1.2 - Factorization of Polynomials - Polynomials in Maths - Mathematics - OLD - 8 .mp4": "same lesson as",
 	}
 	if len(x.Warnings) != len(wantWarn) {

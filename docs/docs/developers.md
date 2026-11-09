@@ -34,8 +34,14 @@ DLC/ folder ──scan──▶ in-memory catalogue ──JSON API──▶ Svel
 
 ## Building
 
-Requirements: Go (version in `go.mod`), Node.js 22.18+, `make`, and optionally
-`ffmpeg` for the demo library.
+Requirements: Go 1.27+ (the toolchain is pinned in `go.mod` and downloaded
+automatically), Node.js 22.18+, `make`, and optionally `ffmpeg` for the demo
+library.
+
+The frontend uses SvelteKit 3 with Svelte 5. There is no `svelte.config.js`:
+SvelteKit is configured in `web/vite.config.ts`, and shared code is imported
+through the `#lib/…` alias declared in `web/package.json` `"imports"`, with file
+extensions (`#lib/api.ts`).
 
 ```sh
 make            # web app + bin/dlc-desktop-app + bin/dlc-check
@@ -73,16 +79,30 @@ input:
 go test ./internal/catalog -run '^$' -fuzz FuzzLegacyCompatibility -fuzztime 60s
 ```
 
-The only intentional difference is that lesson numbers such as `NaN`, `Inf`
-and negative numbers are now rejected. 1.x turned them into nonsense chapter
-numbers.
+There are two intentional differences, both modelled explicitly in the
+test oracle:
+
+- the syllabus is case-insensitive, so `old` means the old syllabus (1.x
+  treated anything but exactly `OLD` as new);
+- lesson numbers such as `NaN`, `Inf` and negative numbers are rejected. 1.x
+  turned them into nonsense chapter numbers.
 
 ## Video player
 
 `web/src/lib/player.ts` is an explicit state machine
 (`idle → loading → paused ⇄ playing ⇄ buffering → ended`, plus `error`).
 `VideoPlayer.svelte` translates `<video>` events into machine events and
-renders from the state. Run its unit tests with `npm test` in `web/`.
+renders from the state.
+
+Watch progress is frontend-only. `web/src/lib/progress.ts` holds the pure
+rules (when to resume, when a lesson counts as watched, storage validation),
+and `progress.svelte.ts` is a reactive store saved in `localStorage` under
+`dlc.progress.v1` and kept in sync across tabs. The open lesson lives in the
+URL (`?lesson=<id>`), so search results and **Continue watching** link
+straight to a playing lesson.
+
+Run the frontend unit tests (player, progress, highlighting) with `npm test`
+in `web/`.
 
 ## HTTP API
 
@@ -94,6 +114,7 @@ All responses are JSON. Errors look like `{"error": "message"}`.
 | `GET /api/classes/{n}[?syllabus=old\|new]` | `{number, syllabi, subjects: [{slug, name, syllabus, chapterCount, lessonCount}]}` |
 | `GET /api/classes/{n}/subjects/{slug}`     | `{class, slug, name, syllabus, chapters: [{number, title, lessons: [{id, number, title, teacher, mediaUrl}]}]}` |
 | `GET /api/teachers`                        | `{teachers: [{name, lessonCount, subjects}]}`                             |
+| `GET /api/search?q=…[&limit=50]`           | `{query, total, results: [{class, subjectSlug, subjectName, syllabus, chapterNumber, chapterTitle, lesson}]}`. Every word must match; title matches rank first; `limit` is at most 200 |
 | `GET /api/library`                         | Folder, counts, scan time, `skipped` and `warnings` lists, version        |
 | `POST /api/library/rescan`                 | Rescans, then returns the same as `GET /api/library`                      |
 | `GET /media/{id}`                          | The video file, with range-request support                                |

@@ -38,6 +38,7 @@ type Index struct {
 
 	classes map[int]*Class
 	lessons map[string]*Lesson
+	search  []searchDoc
 }
 
 // Issue ties a message to a file, relative to the library root.
@@ -165,6 +166,7 @@ func Build(root string) (*Index, error) {
 		return nil, err
 	}
 	b.finish()
+	x.buildSearch()
 	x.Duration = time.Since(start)
 	return x, nil
 }
