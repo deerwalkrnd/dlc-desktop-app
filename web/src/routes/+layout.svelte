@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { navigating } from '$app/state';
-	import Navbar from '$lib/components/Navbar.svelte';
+	import Navbar from '#lib/components/Navbar.svelte';
 	import '../app.css';
 
 	let { children } = $props();

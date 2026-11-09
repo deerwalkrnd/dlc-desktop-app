@@ -22,7 +22,7 @@ TEACHER - LESSON NO - CHAPTER TITLE - LESSON TITLE - SUBJECT - SYLLABUS - CLASS.
 | Chapter title | `Factorization of Polynomials` | Lessons with the same chapter number and title are grouped.        |
 | Lesson title  | `Polynomials in Maths`         |                                                                    |
 | Subject       | `Mathematics`                  | Spelled the same way (including capitals) on every file.           |
-| Syllabus      | `OLD` or `NEW`                 | Write `OLD` in capitals for the old syllabus. Anything else counts as new. |
+| Syllabus      | `OLD` or `NEW`                 | Capitals don't matter (`old` works too). Anything else counts as new, with a warning. |
 | Class         | `8`                            | A whole number.                                                    |
 
 Example:
@@ -60,7 +60,7 @@ The **Library** page in the app lists:
 - **Skipped files**: videos whose names don't follow the format. They don't
   appear in the app. The reason is shown next to each one.
 - **Warnings**: videos that do appear, but whose names look wrong, for
-  example `old` in lower case or the same lesson in two places.
+  example an unrecognised syllabus such as `NEWW`, or the same lesson in two places.
 
 To check a folder *before* copying it to the school computers, run the
 `dlc-check` tool that comes with the app. Open a Command Prompt in the app
@@ -85,8 +85,11 @@ status 1 when any file is skipped, so you can use it in scripts.
 
 ## Compatibility with older names
 
-Every file name that worked with version 1.x still works and shows up in the
-same place. This is enforced by automated tests that compare the new parser
-with the old one. Version 2 also accepts names the old version rejected,
-such as names with hyphens inside them, `.MP4` files and videos in
-sub-folders.
+Every file name that worked with version 1.x still works. This is enforced
+by automated tests that compare the new parser with the old one. Version 2
+also accepts names the old version rejected, such as names with hyphens
+inside them, `.MP4` files and videos in sub-folders.
+
+The one deliberate change: version 1.x treated a lower-case `old` (or `Old`)
+as the **new** syllabus. Version 2 reads it as the old syllabus, which is
+what the name says.

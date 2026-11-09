@@ -18,6 +18,32 @@ title: Using the app
 The **Teachers** page lists every teacher with their lesson count and
 subjects.
 
+## Searching
+
+Type in the **Search lessons** box at the top of every page, or press `/` to
+jump to it. Search looks at lesson titles, chapters, subjects, teachers,
+class numbers (`class 8` or just `8`) and lesson numbers (`1.2`). Every word
+you type has to match somewhere, so `class 9 light` finds the Light lessons
+in Class 9. Results update as you type, and clicking one starts the lesson.
+
+## Picking up where you left off
+
+The app remembers how far you got in each lesson:
+
+- Lessons you've finished show a **✓ Watched** mark, and each chapter shows
+  how many of its lessons you've watched.
+- Lessons you've started show a progress bar and **Resume at 4:32**.
+  Opening one continues from there, and a **Start over** button appears for
+  a few seconds.
+- The home page lists recent unfinished lessons under **Continue watching**.
+  Hover over one and press × to remove it.
+
+A lesson counts as watched once you reach the end, or 95% of the way
+through (or the last 15 seconds of a longer video).
+
+Progress is saved **in this computer's browser**. It isn't shared between
+computers or browsers, and clearing the browser's data resets it.
+
 ## The video player
 
 The player opens on top of the lesson list and starts playing. Use the
@@ -32,6 +58,7 @@ buttons along the bottom, or the keyboard:
 | `M`                 | Mute / unmute                  |
 | `F`                 | Full screen                    |
 | `Shift` + `N` / `P` | Next / previous lesson         |
+| `/`                 | Search (when the player is closed) |
 | `Esc`               | Close the player               |
 
 You can also:
@@ -43,9 +70,10 @@ You can also:
 
 The app remembers your volume and speed.
 
-When a lesson ends, you can **Watch again** or go to the **Next lesson**. If a
-video can't be played (because the file was moved, deleted or damaged), the
-player says so and offers **Try again**.
+Below the video, **Previous** and **Next** show which lessons come before
+and after. When a lesson ends, you can **Watch again** or go to the **Next
+lesson**. If a video can't be played (because the file was moved, deleted or
+damaged), the player says so and offers **Try again**.
 
 ## The Library page
 

@@ -1,6 +1,6 @@
 <!--
 	Modal video player. All playback state lives in the explicit state machine
-	in $lib/player.ts; this component only wires <video> events into it and
+	in #lib/player.ts; this component only wires <video> events into it and
 	renders the current state. Listeners are scoped to the dialog and removed
 	automatically when the component is destroyed.
 -->
@@ -9,13 +9,17 @@
 		id: string;
 		mediaUrl: string;
 		title: string;
-		subtitle?: string;
+		subtitle: string;
+		/** Link that reopens this lesson; stored for "Continue watching". */
+		href: string;
 	}
 </script>
 
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import Icon from './Icon.svelte';
+	import { progress } from '#lib/progress.svelte.ts';
+	import { resumePosition } from '#lib/progress.ts';
 	import {
 		SKIP_SECONDS,
 		SPEEDS,
@@ -29,7 +33,7 @@
 		transition,
 		type KeyAction,
 		type PlayerEvent
-	} from '$lib/player';
+	} from '#lib/player.ts';
 
 	interface Props {
 		lesson: PlayableLesson | null;
@@ -68,6 +72,14 @@
 	let fullscreen = $state(false);
 	let scrubbing = $state(false);
 	let pointerIdle = $state(false);
+	/** Position we resumed from, while the "Resumed at…" notice is shown. */
+	let resumedFrom = $state<number | null>(null);
+
+	// The lesson currently loaded in <video>. Differs from `lesson` for a
+	// moment while switching, which is when the old one's progress is saved.
+	let loaded: PlayableLesson | null = null;
+	let lastSaved = 0;
+	const SAVE_EVERY_MS = 5000;
 
 	const active = $derived(isActive(machine.status));
 	const seekable = $derived(isSeekable(machine.status));
@@ -87,6 +99,9 @@
 	});
 
 	function start(l: PlayableLesson) {
+		saveProgress();
+		loaded = l;
+		resumedFrom = null;
 		if (!dialog.open) dialog.showModal();
 		// showModal() focuses the first button ("Next lesson"), which would make
 		// Space skip ahead. Focus the stage so shortcuts control playback.
@@ -105,6 +120,9 @@
 	}
 
 	function stop() {
+		saveProgress();
+		loaded = null;
+		resumedFrom = null;
 		send({ type: 'UNLOAD' });
 		if (video) {
 			video.pause();
@@ -113,6 +131,56 @@
 		}
 		if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
 		if (dialog?.open) dialog.close();
+	}
+
+	// Watch progress ------------------------------------------------------
+
+	function progressUpdate(l: PlayableLesson) {
+		return {
+			position: video.currentTime,
+			duration: Number.isFinite(video.duration) ? video.duration : 0,
+			title: l.title,
+			subtitle: l.subtitle,
+			href: l.href
+		};
+	}
+
+	function saveProgress() {
+		if (!loaded || !video || machine.status === 'idle' || machine.status === 'error') return;
+		if (!(video.currentTime > 0)) return;
+		progress.save(loaded.id, progressUpdate(loaded));
+		lastSaved = Date.now();
+	}
+
+	function onLoadedMetadata() {
+		duration = Number.isFinite(video.duration) ? video.duration : 0;
+		if (!loaded) return;
+		const at = resumePosition(progress.get(loaded.id));
+		if (at !== null && at < duration) {
+			video.currentTime = at;
+			currentTime = at;
+			resumedFrom = at;
+		}
+	}
+
+	function onTimeUpdate() {
+		if (!scrubbing) currentTime = video.currentTime;
+		updateBuffered();
+		if (resumedFrom !== null && Math.abs(video.currentTime - resumedFrom) > 8) resumedFrom = null;
+		if (active && Date.now() - lastSaved > SAVE_EVERY_MS) saveProgress();
+	}
+
+	function onEnded() {
+		send({ type: 'ENDED' });
+		if (loaded) progress.finish(loaded.id, progressUpdate(loaded));
+	}
+
+	function startOver() {
+		resumedFrom = null;
+		video.currentTime = 0;
+		currentTime = 0;
+		if (video.paused) video.play().catch(() => {});
+		stage.focus({ preventScroll: true });
 	}
 
 	function retry() {
@@ -196,10 +264,21 @@
 	$effect(() => {
 		const onFullscreen = () => (fullscreen = document.fullscreenElement === stage);
 		document.addEventListener('fullscreenchange', onFullscreen);
+		// Closing the tab or browser mid-lesson still remembers the position.
+		window.addEventListener('pagehide', saveProgress);
 		return () => {
+			saveProgress();
+			window.removeEventListener('pagehide', saveProgress);
 			document.removeEventListener('fullscreenchange', onFullscreen);
 			clearTimeout(idleTimer);
 		};
+	});
+
+	// Hide the resume notice after a few seconds.
+	$effect(() => {
+		if (resumedFrom === null) return;
+		const t = setTimeout(() => (resumedFrom = null), 8000);
+		return () => clearTimeout(t);
 	});
 
 	// Remember volume and speed between lessons and visits.
@@ -240,7 +319,7 @@
 	const navButton =
 		'group flex min-w-0 items-center gap-3 rounded-lg bg-white px-3 py-2 text-left ring-1 ring-brand-100 transition hover:bg-brand-50 hover:ring-brand-300 disabled:invisible';
 
-	const progress = $derived(duration ? (currentTime / duration) * 100 : 0);
+	const playedPercent = $derived(duration ? (currentTime / duration) * 100 : 0);
 	const buffered = $derived(duration ? (bufferedEnd / duration) * 100 : 0);
 </script>
 
@@ -288,15 +367,16 @@
 			oncanplay={() => send({ type: 'CAN_PLAY' })}
 			onplay={() => send({ type: 'PLAY' })}
 			onplaying={() => send({ type: 'PLAY' })}
-			onpause={() => send({ type: 'PAUSE' })}
+			onpause={() => {
+				send({ type: 'PAUSE' });
+				saveProgress();
+			}}
 			onwaiting={() => send({ type: 'WAITING' })}
-			onended={() => send({ type: 'ENDED' })}
+			onended={onEnded}
+			onloadedmetadata={onLoadedMetadata}
 			onerror={() =>
 				lesson && send({ type: 'ERROR', message: mediaErrorMessage(video.error?.code) })}
-			ontimeupdate={() => {
-				if (!scrubbing) currentTime = video.currentTime;
-				updateBuffered();
-			}}
+			ontimeupdate={onTimeUpdate}
 			ondurationchange={() => (duration = Number.isFinite(video.duration) ? video.duration : 0)}
 			onprogress={updateBuffered}
 			onvolumechange={() => {
@@ -307,6 +387,20 @@
 		>
 			<track kind="captions" />
 		</video>
+
+		<!-- Resume notice -->
+		{#if resumedFrom !== null && machine.status !== 'error'}
+			<div
+				class="text-brand-900 ring-brand-100 absolute top-3 left-3 z-10 flex items-center gap-3 rounded-full bg-white/95 py-1 pr-1 pl-4 text-sm shadow-md ring-1"
+				role="status"
+			>
+				<span>Resumed at <strong class="tabular-nums">{formatTime(resumedFrom)}</strong></span>
+				<button
+					class="bg-brand-600 hover:bg-brand-500 rounded-full px-3 py-1 font-medium text-white"
+					onclick={startOver}>Start over</button
+				>
+			</div>
+		{/if}
 
 		<!-- State overlays -->
 		{#if machine.status === 'loading' || machine.status === 'buffering'}
@@ -374,7 +468,7 @@
 				disabled={!seekable}
 				aria-label="Seek"
 				aria-valuetext="{formatTime(currentTime)} of {formatTime(duration)}"
-				style="--progress: {progress}%; --buffered: {buffered}%"
+				style="--progress: {playedPercent}%; --buffered: {buffered}%"
 				oninput={(e) => {
 					scrubbing = true;
 					seekTo(Number(e.currentTarget.value));

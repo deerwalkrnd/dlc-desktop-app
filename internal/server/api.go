@@ -63,6 +63,22 @@ type teacherDTO struct {
 	Subjects    []string `json:"subjects"`
 }
 
+type searchHitDTO struct {
+	Class         int       `json:"class"`
+	SubjectSlug   string    `json:"subjectSlug"`
+	SubjectName   string    `json:"subjectName"`
+	Syllabus      string    `json:"syllabus"`
+	ChapterNumber int       `json:"chapterNumber"`
+	ChapterTitle  string    `json:"chapterTitle"`
+	Lesson        lessonDTO `json:"lesson"`
+}
+
+type searchDTO struct {
+	Query   string         `json:"query"`
+	Total   int            `json:"total"`
+	Results []searchHitDTO `json:"results"`
+}
+
 type issueDTO struct {
 	Path    string `json:"path"`
 	Message string `json:"message"`
@@ -142,17 +158,59 @@ func (s *Server) getSubject(w http.ResponseWriter, r *http.Request) {
 	for _, ch := range sub.Chapters {
 		cd := chapterDTO{Number: ch.Number, Title: ch.Title, Lessons: make([]lessonDTO, 0, len(ch.Lessons))}
 		for _, l := range ch.Lessons {
-			cd.Lessons = append(cd.Lessons, lessonDTO{
-				ID:       l.ID,
-				Number:   l.Number,
-				Title:    l.Title,
-				Teacher:  l.Teacher,
-				MediaURL: "/media/" + l.ID,
-			})
+			cd.Lessons = append(cd.Lessons, toLessonDTO(l))
 		}
 		out.Chapters = append(out.Chapters, cd)
 	}
 	writeJSON(w, http.StatusOK, out)
+}
+
+const (
+	defaultSearchLimit = 50
+	maxSearchLimit     = 200
+	maxQueryLength     = 200
+)
+
+func (s *Server) search(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query().Get("q")
+	if len(q) > maxQueryLength {
+		writeError(w, http.StatusBadRequest, "search query is too long")
+		return
+	}
+	limit := defaultSearchLimit
+	if v := r.URL.Query().Get("limit"); v != "" {
+		n, err := strconv.Atoi(v)
+		if err != nil || n < 1 {
+			writeError(w, http.StatusBadRequest, "limit must be a positive number")
+			return
+		}
+		limit = min(n, maxSearchLimit)
+	}
+
+	hits, total := s.lib.Index().Search(q, limit)
+	out := searchDTO{Query: q, Total: total, Results: make([]searchHitDTO, 0, len(hits))}
+	for _, h := range hits {
+		out.Results = append(out.Results, searchHitDTO{
+			Class:         h.Subject.Class,
+			SubjectSlug:   h.Subject.Slug,
+			SubjectName:   h.Subject.Name,
+			Syllabus:      h.Subject.Syllabus.String(),
+			ChapterNumber: h.Chapter.Number,
+			ChapterTitle:  h.Chapter.Title,
+			Lesson:        toLessonDTO(h.Lesson),
+		})
+	}
+	writeJSON(w, http.StatusOK, out)
+}
+
+func toLessonDTO(l *library.Lesson) lessonDTO {
+	return lessonDTO{
+		ID:       l.ID,
+		Number:   l.Number,
+		Title:    l.Title,
+		Teacher:  l.Teacher,
+		MediaURL: "/media/" + l.ID,
+	}
 }
 
 func (s *Server) listTeachers(w http.ResponseWriter, r *http.Request) {

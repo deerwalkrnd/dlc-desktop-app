@@ -311,3 +311,35 @@ func TestLoopbackHosts(t *testing.T) {
 		t.Fatal("loopback addresses must enable the host guard")
 	}
 }
+
+func TestSearchEndpoint(t *testing.T) {
+	s, _ := newTestServer(t, nil)
+	got := decode[searchDTO](t, do(t, s, "GET", "/api/search?q=mid+term", nil))
+	if got.Total != 1 || len(got.Results) != 1 {
+		t.Fatalf("%+v", got)
+	}
+	r := got.Results[0]
+	if r.Class != 9 || r.SubjectSlug != "science-new" || r.Lesson.Title != "Mid-term Review" || r.Lesson.MediaURL != "/media/"+r.Lesson.ID || r.ChapterTitle != "Light" {
+		t.Fatalf("%+v", r)
+	}
+
+	empty := decode[searchDTO](t, do(t, s, "GET", "/api/search?q=", nil))
+	if empty.Total != 0 || empty.Results == nil {
+		t.Fatalf("empty query: %+v (results must be [] not null)", empty)
+	}
+
+	limited := decode[searchDTO](t, do(t, s, "GET", "/api/search?q=mathematics&limit=1", nil))
+	if limited.Total != 4 || len(limited.Results) != 1 {
+		t.Fatalf("limit: %+v", limited)
+	}
+
+	for target, code := range map[string]int{
+		"/api/search?q=x&limit=0":                   400,
+		"/api/search?q=x&limit=abc":                 400,
+		"/api/search?q=" + strings.Repeat("a", 201): 400,
+	} {
+		if rec := do(t, s, "GET", target, nil); rec.Code != code {
+			t.Errorf("%s: %d, want %d", target, rec.Code, code)
+		}
+	}
+}

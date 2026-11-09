@@ -19,6 +19,11 @@
 // split is always tried first. Only when it fails does the parser fall back to
 // splitting on " - " (a hyphen with whitespace on both sides), which lets
 // fields themselves contain hyphens, e.g. "Ram-Prasad Sharma" or "Mid-term".
+//
+// Two deliberate differences from the legacy parser:
+//   - the syllabus is case-insensitive ("old" means OLD; legacy treated it as
+//     NEW), and
+//   - non-finite or negative lesson numbers ("NaN", "Inf", "-1") are rejected.
 package catalog
 
 import (
@@ -38,9 +43,10 @@ const FieldCount = 7
 type Syllabus int
 
 const (
-	// SyllabusOld is selected by the literal field value "OLD".
+	// SyllabusOld is selected by "OLD" in any letter case.
 	SyllabusOld Syllabus = iota
-	// SyllabusNew is used for every other value (legacy behaviour).
+	// SyllabusNew is "NEW" in any letter case, and the fallback for anything
+	// unrecognised (with a warning).
 	SyllabusNew
 )
 
@@ -147,16 +153,12 @@ func fromFields(items []string) (Entry, error) {
 		Class:         class,
 	}
 
-	switch items[5] {
-	case "OLD":
+	switch {
+	case strings.EqualFold(items[5], "OLD"):
 		e.Syllabus = SyllabusOld
-	case "NEW":
+	case strings.EqualFold(items[5], "NEW"):
 	default:
-		hint := ""
-		if strings.EqualFold(items[5], "old") {
-			hint = ` (write "OLD" in capitals for the old syllabus)`
-		}
-		e.Warn("syllabus %q is not OLD or NEW, treated as NEW%s", items[5], hint)
+		e.Warn("syllabus %q is not OLD or NEW, treated as NEW", items[5])
 	}
 
 	for _, f := range []struct{ name, value string }{

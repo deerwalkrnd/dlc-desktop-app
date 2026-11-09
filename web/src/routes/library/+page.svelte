@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { invalidateAll } from '$app/navigation';
-	import { api, ApiError, type Issue, type LibraryStatus } from '$lib/api';
-	import Icon from '$lib/components/Icon.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
+	import { refreshAll } from '$app/navigation';
+	import { api, ApiError, type Issue, type LibraryStatus } from '#lib/api.ts';
+	import Icon from '#lib/components/Icon.svelte';
+	import PageHeader from '#lib/components/PageHeader.svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -22,7 +22,7 @@
 		rescan = { state: 'scanning' };
 		try {
 			const after = await api.rescan(fetch);
-			await invalidateAll();
+			await refreshAll();
 			rescan = { state: 'done', added: after.lessonCount - before };
 		} catch (e) {
 			rescan = { state: 'failed', message: e instanceof ApiError ? e.message : String(e) };

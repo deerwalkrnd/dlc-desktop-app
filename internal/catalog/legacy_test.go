@@ -7,7 +7,8 @@ import (
 	"strings"
 )
 
-// legacyVideo and legacyParse are a verbatim copy (minus logging) of
+// legacyVideo and legacyParse are a verbatim copy (minus logging, plus the
+// RawSubjectType field used to model the deliberate syllabus change) of
 // data.ParseVideoV2 from the SQLite-based releases. They are the oracle for the
 // compatibility guarantee: every filename the old app accepted must parse to
 // the same metadata with the new parser.
@@ -20,6 +21,8 @@ type legacyVideo struct {
 	LectureName   string
 	LessonNumber  string
 	LessionName   string
+
+	RawSubjectType string // trimmed syllabus field, for test bookkeeping only
 }
 
 func legacyParse(path string) *legacyVideo {
@@ -70,6 +73,8 @@ func legacyParse(path string) *legacyVideo {
 		LectureNumber: uint(lectureNumber),
 		SubjectType:   subjectType,
 		Class:         uint(classNumber),
+
+		RawSubjectType: subjectTypeParsed,
 	}
 }
 
@@ -81,11 +86,20 @@ func legacyNumberSane(s string) bool {
 	return err == nil && !math.IsNaN(f) && !math.IsInf(f, 0) && f >= 0 && f < math.MaxInt32
 }
 
+// expectedSyllabus is the legacy syllabus adjusted for the one deliberate
+// change: "old" in any letter case now means the old syllabus.
+func expectedSyllabus(l *legacyVideo) int {
+	if strings.EqualFold(l.RawSubjectType, "OLD") {
+		return 0
+	}
+	return l.SubjectType
+}
+
 func sameAsLegacy(e Entry, l *legacyVideo) bool {
 	return uint(e.Class) == l.Class &&
 		e.Teacher == l.TeacherName &&
 		e.Subject == l.SubjectName &&
-		int(e.Syllabus) == l.SubjectType &&
+		int(e.Syllabus) == expectedSyllabus(l) &&
 		uint(e.ChapterNumber) == l.LectureNumber &&
 		e.ChapterTitle == l.LectureName &&
 		e.LessonNumber == l.LessonNumber &&

@@ -119,7 +119,8 @@ func TestParseFieldOrder(t *testing.T) {
 
 func TestParseWarnings(t *testing.T) {
 	cases := map[string]string{
-		"T - 1 - C - L - S - old - 8.mp4":       `write "OLD" in capitals`,
+		"T - 1 - C - L - S - old - 8.mp4":       "",
+		"T - 1 - C - L - S - New - 8.mp4":       "",
 		"T - 1 - C - L - S - NEWW - 8.mp4":      `syllabus "NEWW" is not OLD or NEW`,
 		"T - 1 - C - L - S - NEW - 8 - x.mp4":   "extra part",
 		"T - 1 -  - L - S - NEW - 8.mp4":        "chapter title is empty",
@@ -156,6 +157,22 @@ func TestParseErrors(t *testing.T) {
 		_, err := Parse(name)
 		if err == nil || !strings.Contains(err.Error(), want) {
 			t.Errorf("%q: error %v, want substring %q", name, err, want)
+		}
+	}
+}
+
+func TestSyllabusIsCaseInsensitive(t *testing.T) {
+	for value, want := range map[string]Syllabus{
+		"OLD": SyllabusOld, "old": SyllabusOld, "Old": SyllabusOld,
+		"NEW": SyllabusNew, "new": SyllabusNew, "New": SyllabusNew,
+		"NEWW": SyllabusNew, "": SyllabusNew,
+	} {
+		e, err := Parse("T - 1 - C - L - S - " + value + " - 8.mp4")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if e.Syllabus != want {
+			t.Errorf("%q: syllabus %v, want %v", value, e.Syllabus, want)
 		}
 	}
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import EmptyState from '$lib/components/EmptyState.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
+	import EmptyState from '#lib/components/EmptyState.svelte';
+	import PageHeader from '#lib/components/PageHeader.svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

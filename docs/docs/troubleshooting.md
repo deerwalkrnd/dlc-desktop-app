@@ -19,9 +19,10 @@ title: Troubleshooting
 
 ### A video is in the wrong syllabus
 
-The syllabus part must be exactly `OLD` (in capitals) for the old syllabus.
-Anything else, including `old`, counts as the new syllabus. The Library page
-shows a warning for these files.
+The syllabus part must be `OLD` for the old syllabus (capitals don't
+matter). Anything that isn't `OLD` or `NEW`, such as a typo like `NEWW`,
+counts as the new syllabus. The Library page shows a warning for these
+files.
 
 ### A subject or chapter appears twice
 

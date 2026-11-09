@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import notFoundAnimation from '$lib/assets/animation2.webm';
+	import notFoundAnimation from '#lib/assets/animation2.webm';
 
 	const notFound = $derived(page.status === 404);
 	const offline = $derived(page.status === 503);
