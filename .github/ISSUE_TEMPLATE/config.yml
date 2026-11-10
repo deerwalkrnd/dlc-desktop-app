@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: User guide
+    url: https://deerwalkrnd.github.io/dlc-desktop-app/
+    about: How to add videos and use the app.
+  - name: Report a security vulnerability
+    url: https://github.com/deerwalkrnd/dlc-desktop-app/security/advisories/new
+    about: Please report security issues privately.

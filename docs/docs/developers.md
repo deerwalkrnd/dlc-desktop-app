@@ -30,7 +30,10 @@ DLC/ folder ──scan──▶ in-memory catalogue ──JSON API──▶ Svel
 | `internal/library`    | Folder scan → immutable index; safe file opening (`os.Root`)   |
 | `internal/server`     | HTTP API, media streaming, SPA serving, security middleware    |
 | `web/`                | SvelteKit app; `web/embed.go` embeds `web/build`               |
-| `scripts/`            | Demo-library generator and release README                      |
+| `internal/winres`     | Writes the Windows icon, version info and manifest (`.syso`)   |
+| `tools/winres`        | Command that `make release` runs to generate those resources   |
+| `assets/windows/`     | App icon sizes (from the Deerwalk logo)                        |
+| `scripts/`            | Demo-library generator, release README, Windows signing script |
 
 ## Building
 
@@ -138,5 +141,23 @@ connect by IP address.
 
 ## Releasing
 
-Push a tag such as `v2.0.0`. The `Release` workflow runs the tests, builds the
-Windows and Linux archives and publishes a GitHub release.
+1. Move the **Unreleased** entries in `CHANGELOG.md` under the new version.
+2. Push a tag such as `v2.0.1` from `main`. The `Release` workflow runs the
+   tests, builds the Windows and Linux archives and publishes a GitHub
+   release.
+
+`make release` first runs `make winres`, which writes
+`cmd/*/rsrc_windows_amd64.syso` (ignored by git). The Go linker embeds these
+in Windows builds, giving the executables their icon, version details and a
+manifest (Windows 10/11, no elevation, long paths). It uses a small
+standard-library generator in `internal/winres`, so no extra tools are needed.
+
+### Code signing (optional)
+
+Unsigned executables make Windows SmartScreen warn about an "unknown
+publisher" the first time they run. To sign releases, buy a code-signing
+certificate and add two repository secrets: `WINDOWS_CERT_PFX` (the `.pfx`
+file, base64-encoded) and `WINDOWS_CERT_PASSWORD`. The release workflow then
+signs both executables with `scripts/sign-windows.sh` (osslsigncode). Locally:
+`make release SIGN=scripts/sign-windows.sh` with the same two variables set,
+`WINDOWS_CERT_PFX` pointing at the file.
