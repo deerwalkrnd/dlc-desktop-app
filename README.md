@@ -41,3 +41,13 @@ For hot reload, run `go run ./cmd/dlc-desktop-app -open=false` and
 
 See the [developer guide](docs/docs/developers.md) for the architecture, the
 API and the filename-compatibility guarantee.
+
+## Contributing
+
+Bug reports and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md),
+and report security issues privately as described in [SECURITY.md](SECURITY.md).
+Changes are listed in [CHANGELOG.md](CHANGELOG.md).
+
+## License
+
+[MIT](LICENSE)

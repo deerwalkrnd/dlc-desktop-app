@@ -93,7 +93,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Deerwalk Learning Center.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Deerwalk Learning Center. Released under the MIT License.`,
     },
     prism: {
       theme: prismThemes.github,

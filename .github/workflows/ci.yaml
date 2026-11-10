@@ -52,3 +52,8 @@ jobs:
           curl -fs http://127.0.0.1:3999/api/classes | grep -q '"number":8'
           curl -fs http://127.0.0.1:3999/ | grep -q '_app/immutable'
           ./bin/dlc-check smoke/DLC
+
+      - name: Release build (dry run)
+        run: |
+          make release
+          unzip -l dist/*-windows-amd64.zip | grep -q 'dlc-desktop-app.exe'

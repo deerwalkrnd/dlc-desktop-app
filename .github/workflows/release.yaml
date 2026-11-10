@@ -28,8 +28,27 @@ jobs:
       - name: Test
         run: make test
 
+      # Optional code signing: add the repository secrets WINDOWS_CERT_PFX
+      # (the .pfx file, base64-encoded) and WINDOWS_CERT_PASSWORD to enable it.
+      - name: Prepare code signing
+        id: sign
+        env:
+          CERT: ${{ secrets.WINDOWS_CERT_PFX }}
+        run: |
+          if [ -z "$CERT" ]; then
+            echo "No signing certificate configured; Windows executables will be unsigned."
+            exit 0
+          fi
+          sudo apt-get update -q && sudo apt-get install -yq osslsigncode
+          echo "$CERT" | base64 -d > "$RUNNER_TEMP/cert.pfx"
+          echo "pfx=$RUNNER_TEMP/cert.pfx" >> "$GITHUB_OUTPUT"
+          echo "cmd=scripts/sign-windows.sh" >> "$GITHUB_OUTPUT"
+
       - name: Build release archives
-        run: make release VERSION=${{ github.ref_name }}
+        env:
+          WINDOWS_CERT_PFX: ${{ steps.sign.outputs.pfx }}
+          WINDOWS_CERT_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
+        run: make release VERSION=${{ github.ref_name }} SIGN=${{ steps.sign.outputs.cmd }}
 
       - name: Publish GitHub release
         env:

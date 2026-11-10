@@ -97,6 +97,7 @@ func run() error {
 	}
 
 	url := browserURL(*addr)
+	setupConsole("DLC Desktop App - " + url + " - close this window to stop the app")
 	ln, err := net.Listen("tcp", *addr)
 	if err != nil {
 		if errors.Is(err, syscall.EADDRINUSE) || isAddrInUse(err) {
